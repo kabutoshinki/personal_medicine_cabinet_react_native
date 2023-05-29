@@ -1,0 +1,87 @@
+// const HiddenItem = (props) => {
+//   const {
+//     item,
+//     swipeAnimatedValue,
+//     leftActionActivated,
+//     rightActionActivated,
+//     rowActionAnimatedValue,
+//     rowHeightAnimatedValue,
+//     deleteRow,
+//   } = props;
+//   if (rightActionActivated) {
+//     Animated.spring(rowActionAnimatedValue, {
+//       toValue: 500,
+//       useNativeDriver: false,
+//     }).start();
+//   } else {
+//     Animated.spring(rowActionAnimatedValue, {
+//       toValue: 75,
+//       useNativeDriver: false,
+//     }).start();
+//   }
+//   return (
+//     <Animated.View className="w-[388px] rounded-lg m-1" style={[{ height: rowHeightAnimatedValue }]}>
+//       <TouchableWithoutFeedback className="" onPress={() => console.log(item?.key)}>
+//         <View
+//           style={{ width: 80, right: 80, backgroundColor: color.lightBlue }}
+//           className="absolute bottom-0 top-0 justify-center"
+//         >
+//           <View style={{ alignItems: "center" }}>
+//             <PencilSquareIcon size={25} color={"white"} />
+//             <Text className="font-bold text-white mt-2">Edit</Text>
+//           </View>
+//         </View>
+//       </TouchableWithoutFeedback>
+
+//       {!leftActionActivated && (
+//         <Animated.View
+//           style={[
+//             { width: 80, right: 0, backgroundColor: color.danger },
+//             {
+//               flex: 1,
+//               width: rowActionAnimatedValue,
+//             },
+//           ]}
+//           className="absolute bottom-0 top-0 justify-center rounded-r-lg"
+//         >
+//           <TouchableWithoutFeedback className="" onPress={() => deleteRow(item?.key)}>
+//             <View
+//               style={{ width: 80, right: 0, backgroundColor: color.danger }}
+//               className="absolute bottom-0 top-0 justify-center rounded-r-lg"
+//             >
+//               <Animated.View
+//                 style={[
+//                   {
+//                     width: 80,
+//                     alignItems: "center",
+//                     transform: [
+//                       {
+//                         scale: swipeAnimatedValue.interpolate({
+//                           inputRange: [-90, -45],
+//                           outputRange: [1, 0],
+//                           extrapolate: "clamp",
+//                         }),
+//                       },
+//                     ],
+//                   },
+//                 ]}
+//                 className="absolute bottom-0 top-0 justify-center rounded-r-lg"
+//               >
+//                 <View style={{ alignItems: "center" }}>
+//                   <TrashIcon size={25} color={"white"} />
+//                   <Text className="font-bold text-white mt-2">Delete</Text>
+//                 </View>
+//               </Animated.View>
+//             </View>
+//           </TouchableWithoutFeedback>
+//         </Animated.View>
+//       )}
+//     </Animated.View>
+//   );
+// };
+ {/* <FlatList
+              data={medicines}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              contentContainerStyle={{ flexGrow: 1 }}
+            ></FlatList> */}

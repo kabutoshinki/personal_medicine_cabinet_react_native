@@ -1,7 +1,8 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React from "react";
+import React, { useEffect } from "react";
 import color from "../../utils/color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Welcome = ({ navigation }) => {
   const onPressLogin = () => {
     navigation.navigate("Login");
@@ -9,6 +10,23 @@ const Welcome = ({ navigation }) => {
   const onPressRegister = () => {
     navigation.navigate("Register");
   };
+
+  useEffect(() => {
+    getData();
+  }, []);
+  const getData = () => {
+    try {
+      AsyncStorage.getItem("user").then((value) => {
+        console.log(value);
+        if (value !== null) {
+          navigation.replace("HomeScreen");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: color.bg }}>
       <View className="flex-1 flex justify-around my-4">

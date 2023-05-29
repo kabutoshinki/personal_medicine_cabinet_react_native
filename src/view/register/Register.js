@@ -3,9 +3,38 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import color from "../../utils/color";
+import * as userService from "../../service/userService";
 const Register = ({ navigation }) => {
   const onPressLogin = () => {
     navigation.navigate("Login");
+  };
+  const [formData, setFormData] = useState({
+    username: "abcdef",
+    password: "123456",
+    email: "huy@gmail.com",
+    phone: "0147852369",
+    age: 16,
+    gender: "MALE",
+  });
+
+  const handleFormChange = (field, value) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [field]: value,
+    }));
+  };
+
+  const onPressHomeHandler = async () => {
+    // if(formData.email==="kabutoshinki@gmail.com" && formData.password==="123456")
+    try {
+      const data = await userService.register(formData);
+
+      navigation.replace("Login");
+      console.log("check");
+    } catch (err) {
+      console.log("err");
+      console.log(err);
+    }
   };
 
   return (

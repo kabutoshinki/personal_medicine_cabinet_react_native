@@ -1,0 +1,196 @@
+import React from "react";
+import { Modal, View, Text, TextInput, TouchableOpacity } from "react-native";
+
+const EditPillModal = ({ visible, onCancel, onSave, item }) => {
+  return (
+    <Modal visible={visible} onRequestClose={onCancel}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View style={{ backgroundColor: "white", padding: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>Edit Pill</Text>
+          <TextInput
+            style={{ borderWidth: 1, borderColor: "gray", padding: 10, marginBottom: 10 }}
+            placeholder="Name"
+            value={item?.pillName}
+          />
+          <TextInput
+            style={{ borderWidth: 1, borderColor: "gray", padding: 10, marginBottom: 10 }}
+            keyboardType="numeric"
+            placeholder="Quantity"
+            value={item?.quantity}
+          />
+          <TextInput
+            style={{ borderWidth: 1, borderColor: "gray", padding: 10, marginBottom: 10 }}
+            placeholder="Dose"
+            value={item?.dose}
+          />
+          <TextInput
+            style={{ borderWidth: 1, borderColor: "gray", padding: 10, marginBottom: 10 }}
+            placeholder="Note"
+            value={item?.note}
+          />
+          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+            <TouchableOpacity onPress={onCancel} style={{ marginRight: 10 }}>
+              <Text style={{ color: "red", fontWeight: "bold" }}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onSave}>
+              <Text style={{ color: "blue", fontWeight: "bold" }}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export default EditPillModal;
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+Reminder
+
+import { View, Text, FlatList, TouchableOpacity, Image, ScrollView, ToastAndroid } from "react-native";
+import React, { useRef, useState } from "react";
+import Header from "../../components/Header";
+import FormAddPill from "../../components/FormAddPill";
+import { Card } from "react-native-paper";
+import uuid from "react-native-uuid";
+import fakeData from "../../../fakedata";
+import {
+  XCircleIcon,
+  PencilSquareIcon,
+  EyeIcon,
+  ArrowLeftIcon,
+  MagnifyingGlassIcon,
+} from "react-native-heroicons/solid";
+import EditPillModal from "../../components/EditPillModal";
+import { FancyAlert } from "react-native-expo-fancy-alerts";
+
+const Item = ({ item, onDelete, onEdit }) => (
+  <View className="w-[400px]">
+    <Card className="flex-auto m-1">
+      <View className="flex-row justify-between items-center  border-b border-gray-600 bp-2">
+        <Text className="text-lg text-center font-bold flex-1 ml-12">{item.pillName}</Text>
+        <TouchableOpacity className=" mr-5" onPress={() => onDelete(item.id)}>
+          <XCircleIcon size={25} color="red" />
+        </TouchableOpacity>
+      </View>
+      <Card.Content className=" ">
+        <View className="flex-row justify-center items-center">
+          <Image source={require("../../../assets/icons/add_medicine.png")} />
+          <View className="flex-1">
+            <Text style={{ fontSize: 16 }}>Quantity: {item.quantity}</Text>
+            <Text style={{ fontSize: 16 }}>Dose: {item.dose}</Text>
+          </View>
+          <View>
+            <TouchableOpacity onPress={() => onEdit(item)}>
+              <PencilSquareIcon size={25} color="#29C5F6" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View className="">
+          <TouchableOpacity className="flex-row justify-center items-center ">
+            <EyeIcon size={25} color="#29C5F6" />
+            <Text className="ml-1 font-bold">View Detail</Text>
+          </TouchableOpacity>
+        </View>
+      </Card.Content>
+    </Card>
+  </View>
+);
+
+const Reminder = ({ navigation }) => {
+  const [pills, setPills] = useState(fakeData);
+  const flatListRef = useRef(null);
+  const [editingPill, setEditingPill] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const toggleAlert = React.useCallback(() => {
+    setVisible(!visible);
+  }, [visible]);
+
+  const addPill = (pillData) => {
+    const newPill = {
+      ...pillData,
+      id: uuid.v4(), // Generate a unique id
+    };
+    setPills((prevPills) => [...prevPills, newPill]);
+    flatListRef.current?.scrollToEnd({ animated: true });
+    ToastAndroid.show("Add Successfully", ToastAndroid.SHORT);
+  };
+
+  const handleFinish = () => {
+    const medicineData = {
+      id: uuid.v4(),
+      time: "15:10",
+      medicineName: "abcasdd",
+      date: "2 week",
+      pill: pills,
+    };
+    console.log(medicineData);
+    navigation.navigate("DrawerHome", { medicineData });
+  };
+
+  const renderItem = ({ item }) => <Item item={item} onDelete={deletePill} onEdit={editPill} />;
+
+  const deletePill = (id) => {
+    setPills((prevPills) => {
+      const updatedPills = prevPills.filter((pill) => pill.id !== id);
+      return updatedPills;
+    });
+  };
+  const editPill = (item) => {
+    setEditingPill(item);
+    setModalVisible(true);
+  };
+
+  const handleSave = (updatedItem) => {
+    setPills((prevPills) => prevPills.map((pill) => (pill.id === updatedItem.id ? updatedItem : pill)));
+    setEditingPill(null);
+    setModalVisible(false);
+  };
+
+  return (
+    <View className="flex-1">
+      <Header
+        name={"Reminder"}
+        onPress_1={() => navigation.goBack()}
+        icon_1={<ArrowLeftIcon size="30" color="white" />}
+        icon_2={<MagnifyingGlassIcon size="30" color="white" />}
+      />
+
+      <View className="my-3 justify-center items-center">
+        <Text className="text-2xl font-bold">Medicine Information</Text>
+      </View>
+      <View className="flex-2 justify-center items-center ">
+        <ScrollView>
+          <FormAddPill addPill={addPill} />
+        </ScrollView>
+      </View>
+      {/* <View className=" justify-center items-center   h-[300px] ">
+        <Text className="text-xl font-bold text-center">List Pills</Text>
+        {pills.length === 0 ? (
+          <View className="bg-gray-300 w-[96%] flex-1 justify-center items-center ">
+            <Text className="text-center font-bold">Empty Pill</Text>
+          </View>
+        ) : (
+          <View className="bg-gray-300  h-[255px]">
+            <FlatList
+              data={pills}
+              ref={flatListRef}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              className="max-h-[300px]"
+              contentContainerStyle={{ flexGrow: 1 }}
+              onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            ></FlatList>
+          </View>
+        )}
+      </View> */}
+      <View className="mt-6 bg-green-300 mb-8 py-4    ">
+        <TouchableOpacity onPress={() => navigation.navigate("ListPill")}>
+          <Text className="text-center">Finish</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+export default Reminder;

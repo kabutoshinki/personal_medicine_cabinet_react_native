@@ -23,19 +23,185 @@ const data = [
 ];
 
 export default fakeData = [
-  { medicineName: "abc", imageURI: "./assets/icons/add_medicine.png", id: "1A", quantity: 1, dose: 1, note: "" },
-  { medicineName: "azd", imageURI: "./assets/icons/add_medicine.png", id: "2A", quantity: 1, dose: 1, not: "" },
+  {
+    pillName: "abc",
+    imageURI: "./assets/icons/add_medicine.png",
+    id: "1A",
+    quantity: "1",
+    dose: "1",
+    note: "Before Meals",
+    time: "2.56",
+  },
+  {
+    pillName: "azd",
+    imageURI: "./assets/icons/add_medicine.png",
+    id: "6A",
+    quantity: "1",
+    dose: "1",
+    note: "Every Other Day",
+    time: "2.56",
+  },
 ];
 
-export const medicineDate = [
+export const medicineTimeData = [
   {
+    key: "1",
     id: "1",
-    time: "12:30",
     medicineName: "abcd",
-    date: "2 week",
+    medicineImage: "",
+    priority: "LOW",
     pill: [
-      { medicineName: "abc", imageURI: "./assets/icons/add_medicine.png", id: "1A", quantity: 1, dose: 1 },
-      { medicineName: "azd", imageURI: "./assets/icons/add_medicine.png", id: "2A", quantity: 1, dose: 1 },
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "1A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "2A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "3A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "4A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+    ],
+  },
+  {
+    key: "2",
+    id: "10",
+    medicineName: "abcd",
+    medicineImage: "",
+    priority: "LOW",
+    pill: [
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "5A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "6A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+    ],
+  },
+  {
+    key: "3",
+    id: "9",
+    medicineName: "abcd",
+    medicineImage: "",
+    priority: "LOW",
+    pill: [
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "5A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "6A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+    ],
+  },
+  {
+    key: "4",
+    id: "8",
+    medicineName: "abcd",
+    medicineImage: "",
+    priority: "LOW",
+    pill: [
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "5A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "6A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+    ],
+  },
+  {
+    key: "5",
+    id: "7",
+    medicineName: "abcd",
+    medicineImage: "",
+    priority: "LOW",
+    pill: [
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "5A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
+
+      {
+        pillName: "abc",
+        imageURI: "./assets/icons/add_medicine.png",
+        id: "6A",
+        quantity: "1",
+        dose: "1",
+        note: "Before Meals",
+        time: "2.56",
+      },
     ],
   },
 ];

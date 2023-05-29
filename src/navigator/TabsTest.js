@@ -5,10 +5,16 @@ import Test1 from "../components/Test1";
 import Test2 from "../components/Test2";
 import Test3 from "../components/Test3";
 import DrawerNavigator from "./DrawerNavigator";
-import { PresentationChartBarIcon, Cog6ToothIcon, UserIcon } from "react-native-heroicons/solid";
+import {
+  PresentationChartBarIcon,
+  Cog6ToothIcon,
+  UserIcon,
+  EllipsisHorizontalCircleIcon,
+  ClipboardDocumentListIcon,
+} from "react-native-heroicons/solid";
 import { useNavigation } from "@react-navigation/native";
 import Reminder from "../view/pill/Reminder";
-
+import color from "../utils/color";
 const CustomTabBarButton = ({ children, onPress }) => {
   return (
     <TouchableOpacity
@@ -29,12 +35,13 @@ const CustomTabBarButton = ({ children, onPress }) => {
         elevation: 5,
       }}
     >
-      <View style={{ width: 70, height: 70, borderRadius: 35, backgroundColor: "#4D9FEC" }}>{children}</View>
+      <View style={{ width: 70, height: 70, borderRadius: 35, backgroundColor: color.main_color }}>{children}</View>
     </TouchableOpacity>
   );
 };
 
 const TabsTest = () => {
+  console.log("tab");
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();
   const onPressHandler = () => {
@@ -55,13 +62,13 @@ const TabsTest = () => {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              {/* <HomeIcon size={25} color={focused ? "#4D9FEC" : "#748c94"} /> */}
+              {/* <HomeIcon size={25} color={focused ? color.main_color : "#748c94"} /> */}
               <Image
                 source={require("../../assets/icons/Home.png")}
                 resizeMode="contain"
-                style={{ width: 25, height: 25, tintColor: focused ? "#4D9FEC" : "#748c94" }}
+                style={{ width: 25, height: 25, tintColor: focused ? color.main_color : "#748c94" }}
               />
-              <Text style={{ color: focused ? "#4D9FEC" : "#748c94", fontSize: 12 }}>Home</Text>
+              <Text style={{ color: focused ? color.main_color : "#748c94", fontSize: 12 }}>Home</Text>
             </View>
           ),
         }}
@@ -72,8 +79,8 @@ const TabsTest = () => {
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <PresentationChartBarIcon size={25} color={focused ? "#4D9FEC" : "#748c94"} />
-              <Text style={{ color: focused ? "#4D9FEC" : "#748c94", fontSize: 12 }}>Progress</Text>
+              <PresentationChartBarIcon size={25} color={focused ? color.main_color : "#748c94"} />
+              <Text style={{ color: focused ? color.main_color : "#748c94", fontSize: 12 }}>Progress</Text>
             </View>
           ),
         }}
@@ -94,25 +101,25 @@ const TabsTest = () => {
       />
 
       <Tab.Screen
-        name="Setting"
+        name="History"
         component={Test2}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <Cog6ToothIcon size={25} color={focused ? "#4D9FEC" : "#748c94"} />
-              <Text style={{ color: focused ? "#4D9FEC" : "#748c94", fontSize: 12 }}>Setting</Text>
+              <ClipboardDocumentListIcon size={25} color={focused ? color.main_color : "#748c94"} />
+              <Text style={{ color: focused ? color.main_color : "#748c94", fontSize: 12 }}>History</Text>
             </View>
           ),
         }}
       />
       <Tab.Screen
-        name="Profile"
+        name="More"
         component={Test3}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <UserIcon size={25} color={focused ? "#4D9FEC" : "#748c94"} />
-              <Text style={{ color: focused ? "#4D9FEC" : "#748c94", fontSize: 12 }}>Profile</Text>
+              <EllipsisHorizontalCircleIcon size={25} color={focused ? color.main_color : "#748c94"} />
+              <Text style={{ color: focused ? color.main_color : "#748c94", fontSize: 12 }}>More</Text>
             </View>
           ),
         }}

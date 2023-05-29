@@ -112,7 +112,7 @@ const TimeComponent = () => {
       </TouchableOpacity>
       <TextInput
         value={time} // Display the chosen date in the TextInput
-        className="p-1 bg-red-100 text-gray-700 rounded-lg mb-1"
+        className="p-1  text-gray-700 rounded-lg mb-1  border my-2 border-black rounded-lg"
         editable={false}
         selectTextOnFocus={false}
       />

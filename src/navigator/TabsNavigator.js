@@ -12,6 +12,7 @@ import {
   Cog6ToothIcon,
   UserIcon,
 } from "react-native-heroicons/solid";
+
 import Reminder from "../view/pill/Reminder";
 
 const CustomTabBarButton = ({ children, onPress }) => {

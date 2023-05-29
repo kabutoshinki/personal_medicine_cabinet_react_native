@@ -4,8 +4,11 @@ import Login from "../view/login/Login";
 import Register from "../view/register/Register";
 import Welcome from "../view/welcome/Welcome";
 import TabsTest from "./TabsTest";
-import PillReminder from "../view/pill/PillReminder";
 import Reminder from "../view/pill/Reminder";
+import ListPills from "../view/list/ListPills";
+import Profile from "../view/profile/Profile";
+import EditProfile from "../view/profile/EditProfile";
+
 const Stack = createNativeStackNavigator();
 const screenOptionStyle = {
   headerStyle: {
@@ -15,14 +18,17 @@ const screenOptionStyle = {
   headerBackTitle: "Back",
 };
 const StackNavigator = () => {
+  console.log("stack");
   return (
     <Stack.Navigator screenOptions={{ header: () => null }}>
       <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="HomeScreen" component={TabsTest} />
-      <Stack.Screen name="Medical" component={PillReminder} />
       <Stack.Screen name="PillReminder" component={Reminder} />
+      <Stack.Screen name="ListPill" component={ListPills} />
+      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
     </Stack.Navigator>
   );
 };

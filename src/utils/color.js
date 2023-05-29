@@ -7,4 +7,10 @@ export default {
   green: "#10B981",
   red: "#EF4444",
   bg: "#877dfa",
+  main_color: "#6bb1ec",
+  white: "#fff",
+  warning: "#ffcc00",
+  danger: "#cc3300",
+  success: "#99cc33",
+  lightBlue: "#29C5F6",
 };

@@ -2,15 +2,39 @@ import { View, Text, TouchableOpacity, Image, TextInput } from "react-native";
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowLeftIcon } from "react-native-heroicons/solid";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import color from "../../utils/color";
+import * as authService from "../../service/authService";
 const Login = ({ navigation }) => {
+  const [formData, setFormData] = useState({
+    phonenumber: "012345678",
+    password: "admin12345",
+  });
+
+  const handleFormChange = (field, value) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [field]: value,
+    }));
+  };
+
   const onPressRegister = () => {
     navigation.navigate("Register");
   };
-  const onPressHomeHandler = () => {
+  const onPressHomeHandler = async () => {
     navigation.replace("HomeScreen");
+    // try {
+    //   const data = await authService.login(formData);
+    //   const user = await authService.getCurrentUser();
+    //   await AsyncStorage.setItem("user", JSON.stringify(user));
+    //   navigation.replace("HomeScreen");
+    //   console.log("check");
+    // } catch (err) {
+    //   console.log("err");
+    //   console.log(err);
+    // }
   };
+
   return (
     <View className="flex-1 bg-white" style={{ backgroundColor: color.bg }}>
       <SafeAreaView className="flex">
@@ -33,18 +57,21 @@ const Login = ({ navigation }) => {
       {/* ======================== */}
       <View className="flex-1 bg-white px-6 pt-6" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
         <View className="form space-y-2">
-          <Text className="text-gray-700 ml-4">Email Address</Text>
+          <Text className="text-gray-700 ml-4">Phone</Text>
           <TextInput
             className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-1"
-            value="john@gmail.com"
-            placeholder="Enter Email"
+            value={formData.phonenumber}
+            placeholder="Phone"
+            keyboardType="numeric"
+            onChangeText={(value) => handleFormChange("phonenumber", value)}
           />
           <Text className="text-gray-700 ml-4">Password</Text>
           <TextInput
             className="p-4 bg-gray-100 text-gray-700 rounded-2xl"
             secureTextEntry
-            value="********"
+            value={formData.password}
             placeholder="Enter Password"
+            onChangeText={(value) => handleFormChange("password", value)}
           />
           <TouchableOpacity className="flex items-end mb-1">
             <Text className="text-gray-700 font-bold">Forgot Password?</Text>

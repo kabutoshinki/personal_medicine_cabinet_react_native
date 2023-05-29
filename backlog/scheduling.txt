@@ -1,0 +1,265 @@
+import { View, Text, FlatList, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Bars3Icon,
+  MagnifyingGlassIcon,
+  XCircleIcon,
+  PencilSquareIcon,
+  EyeIcon,
+  UserCircleIcon,
+} from "react-native-heroicons/solid";
+import Header from "../../components/Header";
+import { medicineTimeData } from "../../../fakedata.js";
+import * as Notifications from "expo-notifications";
+import { Card } from "react-native-paper";
+import { useRoute } from "@react-navigation/native";
+import NotificationComponent from "../../components/NotificationComponent";
+import MedicineModal from "../../components/MedicineModal";
+const Item = ({ item, onDelete, onOption }) => (
+  <View className="w-[400px] bg-slate-300">
+    <Card className="flex-auto m-1">
+      <View className="flex-row justify-between items-center  border-b border-gray-600 bp-2">
+        <Text className="text-lg text-center font-bold flex-1 ml-12">{item.medicineName}</Text>
+        <TouchableOpacity className=" mr-5" onPress={() => onDelete(item.id)}>
+          <XCircleIcon size={25} color="red" />
+        </TouchableOpacity>
+      </View>
+      <Card.Content className=" ">
+        <View className="flex-row justify-center items-center">
+          <Image source={require("../../../assets/icons/add_medicine.png")} />
+          <View className="flex-1 items-center justify-center">
+            <Text className="font-bold text-lg">Priority: {item.priority}</Text>
+          </View>
+          <View>
+            <TouchableOpacity onPress={() => onOption(item, "Edit")}>
+              <PencilSquareIcon size={25} color="#29C5F6" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View className="">
+          <TouchableOpacity className="flex-row justify-center items-center " onPress={() => onOption(item, "View")}>
+            <EyeIcon size={25} color="#29C5F6" />
+            <Text className="ml-1 font-bold">View Detail</Text>
+          </TouchableOpacity>
+        </View>
+      </Card.Content>
+    </Card>
+  </View>
+);
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+const Home = ({ navigation }) => {
+  const route = useRoute();
+  const { medicineData } = route.params || { medicineData: null };
+  const [medicine, setMedicine] = useState(medicineTimeData);
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  const [editMedicine, setEditMedicine] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [stateMedicine, setStateMedicine] = useState("");
+
+  useEffect(() => {
+    if (medicineData) {
+      setMedicine((prev) => [...prev, medicineData]);
+    }
+  }, [medicineData]);
+
+  useEffect(() => {
+    scheduleNotifications();
+  }, [medicine]);
+
+  const renderItem = ({ item }) => <Item item={item} onDelete={deleteMedicine} onOption={optionMedicine} />;
+
+  const deleteMedicine = (id) => {
+    setMedicine((prevMedicine) => {
+      const updatedMedicine = prevMedicine.filter((pill) => pill.id !== id);
+      return updatedMedicine;
+    });
+  };
+
+  const optionMedicine = (item, state) => {
+    setEditMedicine(item);
+    setModalVisible(true);
+    setStateMedicine(state);
+  };
+
+  const onPressHandler = () => {
+    navigation.navigate("PillReminder");
+  };
+  const onOpenDrawer = () => {
+    navigation.openDrawer();
+  };
+
+  async function registerForPushNotificationsAsync() {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      console.log("Failed to get push token for notifications!");
+      return;
+    }
+
+    try {
+      const deviceToken = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log("Device Token:", deviceToken);
+      // You can save the device token in your state or send it to your server for further use
+    } catch (error) {
+      console.log("Error getting device token:", error);
+    }
+  }
+
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log(response);
+    });
+
+    registerForPushNotificationsAsync();
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
+  async function scheduleNotifications() {
+    const currentTime = new Date();
+    const currentHour = currentTime.getHours();
+    const currentMinute = currentTime.getMinutes();
+
+    medicine?.pill?.forEach(({ id, time }) => {
+      const [hour, minute] = time.split(":").map(Number);
+      const notificationTime = new Date();
+      notificationTime.setHours(hour);
+      notificationTime.setMinutes(minute);
+
+      if (notificationTime <= currentTime) {
+        notificationTime.setDate(currentTime.getDate() + 1);
+      }
+
+      notificationTime.setSeconds(0);
+      notificationTime.setMilliseconds(0);
+
+      const delay = notificationTime.getTime() - currentTime.getTime();
+      console.log("1");
+      setTimeout(() => {
+        const uniqueId = id + "-" + Date.now(); // Append timestamp for uniqueness
+        schedulePushNotification(uniqueId, time);
+        console.log(uniqueId);
+      }, delay);
+    });
+  }
+
+  async function schedulePushNotification(id, time) {
+    await Notifications.cancelScheduledNotificationAsync(id.toString());
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Notification",
+        body: `It's time for ${time}!`,
+        data: { id },
+      },
+      trigger: null,
+      sound: "default",
+    });
+  }
+
+  async function registerForPushNotificationsAsync() {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      console.log("Failed to get push token for notifications!");
+      return;
+    }
+
+    try {
+      const deviceToken = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log("Device Token:", deviceToken);
+      // You can save the device token in your state or send it to your server for further use
+    } catch (error) {
+      console.log("Error getting device token:", error);
+    }
+  }
+
+  const handleSave = (updatedItem) => {
+    setPills((prevPills) => prevPills.map((pill) => (pill.id === updatedItem.id ? updatedItem : pill)));
+    setEditingPill(null);
+    setModalVisible(false);
+  };
+
+  return (
+    <View className="flex-1">
+      <Header
+        name={"Home"}
+        onPress_1={onOpenDrawer}
+        onPress_2={onOpenDrawer}
+        icon_1={<Bars3Icon size="30" color="white" />}
+        icon_2={<MagnifyingGlassIcon size="30" color="white" />}
+        other={
+          <TouchableOpacity className=" p-2 mr-4" onPress={() => navigation.navigate("Profile")}>
+            <UserCircleIcon size={30} color="white" />
+          </TouchableOpacity>
+        }
+      />
+
+      {medicine !== null ? (
+        <View className="mt-1 justify-center items-center h-[600px]">
+          <Text className="text-xl font-bold text-center mb-3">List Medicines</Text>
+          <FlatList
+            data={medicine}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={{ flexGrow: 1 }}
+          ></FlatList>
+        </View>
+      ) : (
+        <View className="flex my-4 justify-center items-center mt-24">
+          <View className="">
+            <Image source={require("../../../assets/images/Medical.png")} />
+          </View>
+          <View className="mt-5 mx-12">
+            <Text className="font-bold text-center text-xl mb-3">Welcome to PMC</Text>
+            <Text className="text-center text-base mb-3">
+              Add new medication, to help us manage your medicine cabinet.
+            </Text>
+          </View>
+          <View className="items-center justify-center">
+            <TouchableOpacity className="bg-[#4D9FEC] rounded-xl px-12 py-5" onPress={onPressHandler}>
+              <Text className="text-2xl text-center items-center justify-center text-white">Add new medicine</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      <MedicineModal
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        item={editMedicine}
+        state={stateMedicine}
+        onSave={handleSave}
+      />
+    </View>
+  );
+};
+
+export default Home;
