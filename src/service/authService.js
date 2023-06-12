@@ -11,6 +11,7 @@ const accessToken = "Access-Token";
 //   };
 
 export async function login(user) {
+  console.log("user");
   console.log(user);
   const { data } = await axios.post("http://10.0.2.2:8080/api/authentication", {
     phonenumber: user.phonenumber,

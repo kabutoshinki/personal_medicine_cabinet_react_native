@@ -5,13 +5,13 @@ import Header from "../../components/Header";
 import { medicineTimeData } from "../../../fakedata.js";
 import { useRoute } from "@react-navigation/native";
 import ListMedicines from "../list/ListMedicines";
-import SwipeList from "../list/SwipeList";
+import ListTest from "../list/ListTest";
 
 const Home = ({ navigation }) => {
-  console.log("Home");
   const route = useRoute();
+
   const { medicineData } = route.params || { medicineData: null };
-  const [medicine, setMedicine] = useState(medicineTimeData);
+  const [medicine, setMedicine] = useState([]);
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
@@ -49,7 +49,7 @@ const Home = ({ navigation }) => {
         }
         icon_2={<MagnifyingGlassIcon size="30" color="white" />}
       />
-      <ListMedicines medicineData={medicineData} />
+      <ListTest medicineData={medicineData} />
     </View>
   );
 };

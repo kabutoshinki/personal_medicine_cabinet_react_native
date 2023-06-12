@@ -38,7 +38,7 @@ const Register = ({ navigation }) => {
   };
 
   return (
-    <View className="flex-1 bg-white" style={{ backgroundColor: color.bg }}>
+    <View className="flex-1 bg-white" style={{ backgroundColor: color.main_color }}>
       <SafeAreaView className="flex">
         <View className="flex-row justify-start">
           <TouchableOpacity
@@ -50,14 +50,14 @@ const Register = ({ navigation }) => {
         </View>
         <View className="flex-row justify-center">
           <Image
-            source={require("../../../assets/images/signup.png")}
-            style={{ width: 165, height: 110 }}
+            source={require("../../../assets/images/register_img.png")}
+            style={{ width: 195, height: 130 }}
             className="mb-3"
           />
         </View>
       </SafeAreaView>
       {/* ======================== */}
-      <View className="flex-1 bg-white px-8 pt-8" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
+      <View className="flex-1 bg-white px-8 pt-8 mt-2" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
         <View className="form space-y-2">
           <Text className="text-gray-700 ml-4">Full Name</Text>
           <TextInput

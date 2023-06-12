@@ -16,10 +16,11 @@ import {
 import Reminder from "../view/pill/Reminder";
 
 const CustomTabBarButton = ({ children, onPress }) => {
-  <TouchableOpacity
-    onPress={onPress}
-    style={{ top: -30, justifyContent: "center", alignItems: "center", ...styles.shadow }}
-  >
+  // <TouchableOpacity
+  //   onPress={onPress}
+  //   style={{ top: -30, justifyContent: "center", alignItems: "center", ...styles.shadow }}
+  // >
+  <TouchableOpacity onPress={onPress} style={{ top: -30, justifyContent: "center", alignItems: "center" }}>
     <View style={{ width: 70, height: 70, borderRadius: 35, backgroundColor: "#e32f45" }}>{children}</View>
   </TouchableOpacity>;
 };

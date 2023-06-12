@@ -11,18 +11,19 @@ import {
 } from "react-native-heroicons/solid";
 import { FancyAlert } from "react-native-expo-fancy-alerts";
 import AlertCustom from "./AlertCustom";
+import color from "../utils/color";
 
-const ItemComponent = ({ item, onDelete, onOption, rightActionState, rowHeightAnimatedValue }) => {
+const ItemTakeMedicine = ({ item, onDelete, onOption, rightActionState, rowHeightAnimatedValue }) => {
   const [visible, setVisible] = React.useState(false);
   const toggleAlert = React.useCallback(() => {
     setVisible(!visible);
   }, [visible]);
-
+  console.log(item);
   return (
-    <Animated.View className="w-[400px]">
-      <Card className="flex-auto m-1">
+    <Animated.View className="w-[360px]">
+      <Card className="flex-auto m-1 bg-gray-100">
         <Card.Content className=" ">
-          <TouchableOpacity onPress={() => onOption(item, "Edit")}>
+          <TouchableOpacity onPress={() => {}}>
             <View className="flex-row justify-center items-center">
               <View className="flex-[0.4]">
                 {item?.imageURI !== null ? (
@@ -56,11 +57,22 @@ const ItemComponent = ({ item, onDelete, onOption, rightActionState, rowHeightAn
                   <Text className="font-bold ml-2 text-sm text-gray-600">{item?.note}</Text>
                 </View>
               </View>
-              {/* <View>
-                <TouchableOpacity onPress={() => onOption(item, "Edit")}>
-                  <PencilSquareIcon size={25} color="#29C5F6" />
-                </TouchableOpacity>
-              </View> */}
+            </View>
+            <View className="flex-row justify-around mt-2">
+              <TouchableOpacity
+                className="py-1 px-5 rounded-md"
+                style={{ backgroundColor: color.warning }}
+                onPress={() => {}}
+              >
+                <Text className="text-white font-bold text-lg">Skip</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="py-1 px-5 rounded-md"
+                style={{ backgroundColor: color.success }}
+                onPress={() => {}}
+              >
+                <Text className="text-white font-bold text-lg">Take</Text>
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         </Card.Content>
@@ -69,4 +81,4 @@ const ItemComponent = ({ item, onDelete, onOption, rightActionState, rowHeightAn
   );
 };
 
-export default ItemComponent;
+export default ItemTakeMedicine;

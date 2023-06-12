@@ -4,34 +4,18 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { XCircleIcon, XMarkIcon } from "react-native-heroicons/outline";
 import color from "../utils/color";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { PlusIcon } from "react-native-heroicons/solid";
-import uuid from "react-native-uuid";
-const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
+
+const TimeComponentCustom_2 = ({ onTimeChange, state, timeCurrent }) => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
-
-  // const [timeBoxes, setTimeBoxes] = useState([
-  //   { id: 1, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }) },
-  // ]);
-
-  const [timeBoxes, setTimeBoxes] = useState(() => {
-    if (timeCurrent) {
-      return timeCurrent;
-    } else {
-      return [
-        { id: 1, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }) },
-      ];
-    }
-  });
-
+  const [timeBoxes, setTimeBoxes] = useState([
+    { id: 1, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }) },
+  ]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [editTime, setEditTime] = useState({});
   const [editTimeVisible, setEditTimeVisible] = useState(false);
-  useEffect(() => {
-    console.log("onTimeChange");
-    onTimeChange(timeBoxes);
-  }, [timeBoxes]);
+
   const handlePopup = (timeBox) => {
     setEditTime(timeBox);
     setModalVisible(true);
@@ -65,10 +49,7 @@ const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
       .sort((a, b) => (a.time > b.time ? 1 : -1))
       .map((timeBox) => (
         <View key={timeBox.id} className="flex-1 mx-2">
-          <TouchableOpacity
-            onPress={() => handlePopup(timeBox)}
-            className="bg-white py-3 rounded-lg border-2 border-gray-400"
-          >
+          <TouchableOpacity onPress={() => handlePopup(timeBox)} className="bg-gray-200 py-3 rounded-lg">
             <Text style={{ color: "black", fontSize: 14, fontWeight: "bold" }} className="text-center">
               {timeBox.time}
             </Text>
@@ -102,15 +83,13 @@ const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
             </View>
             <View className="flex-1">
               <View style={{ flexDirection: "row", justifyContent: "center" }} className="space-x-6 items-center mt-5">
-                {timeBoxes?.length != 1 && (
-                  <TouchableOpacity
-                    style={{ backgroundColor: color.danger }}
-                    onPress={() => handleDeleteTime(editTime)}
-                    className="h-12 w-24 rounded-lg justify-center items-center"
-                  >
-                    <Text className="text-white font-bold text-[16px]">Delete</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                  style={{ backgroundColor: color.danger }}
+                  onPress={() => handleDeleteTime(editTime)}
+                  className="h-12 w-24 rounded-lg justify-center items-center"
+                >
+                  <Text className="text-white font-bold text-[16px]">Delete</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleEditTime}
                   style={{ backgroundColor: color.warning }}
@@ -142,8 +121,7 @@ const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
     const currentDate = selectDate || date;
     const selectedTime = currentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
     console.log(selectedTime);
-    setTimeBoxes((prevTimeBoxes) => [...prevTimeBoxes, { id: uuid.v4(), time: selectedTime }]);
-
+    setTimeBoxes((prevTimeBoxes) => [...prevTimeBoxes, { id: prevTimeBoxes.length + 1, time: selectedTime }]);
     hideDatePicker();
   };
   const handleEditConfirm = (selectDate) => {
@@ -156,28 +134,20 @@ const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
       return box;
     });
     setTimeBoxes(updatedTimeBoxes);
-
     setEditTimeVisible(false);
   };
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 my-2">
       <View className="flex-row items-center justify-between">
-        <Text className="text-gray-700 ml-4 font-bold text-lg">Time</Text>
+        <Text className="text-gray-700 ml-4 font-bold my-2 text-lg">Time</Text>
         {timeBoxes?.length < 4 ? (
-          // <TouchableOpacity onPress={showDatePicker}>
-          //   <Text className="text-gray-700 mr-4 font-bold my-2 text-lg">Add Time</Text>
-          // </TouchableOpacity>
-          <TouchableOpacity
-            style={{ backgroundColor: color.success }}
-            className="mr-4 rounded-lg p-2 my-2"
-            onPress={showDatePicker}
-          >
-            <PlusIcon size={20} color={"white"} />
+          <TouchableOpacity onPress={showDatePicker}>
+            <Text className="text-gray-700 mr-4 font-bold my-2 text-lg">Add Time</Text>
           </TouchableOpacity>
         ) : null}
       </View>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 0 }} className="justify-center items-center mb-2">
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 0 }} className="justify-center items-center mb-5">
         {renderTimeBoxes()}
       </View>
       {modalVisible && renderModal()}
@@ -207,4 +177,4 @@ const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
   );
 };
 
-export default TimeComponentCustom;
+export default TimeComponentCustom_2;

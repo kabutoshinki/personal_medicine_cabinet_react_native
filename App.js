@@ -13,6 +13,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
+      <StatusBar hidden />
       <StackNavigator />
     </NavigationContainer>
   );

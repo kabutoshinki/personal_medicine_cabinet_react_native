@@ -8,7 +8,7 @@ import { useRoute } from "@react-navigation/native";
 import ItemComponent from "../../components/ItemComponent";
 import FinishModal from "../../components/FinishModal";
 const ListPills = ({ navigation }) => {
-  const [pills, setPills] = useState(fakedata);
+  const [pills, setPills] = useState([]);
   const flatListRef = useRef(null);
   const [editingPill, setEditingPill] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -52,7 +52,7 @@ const ListPills = ({ navigation }) => {
         icon_2={<MagnifyingGlassIcon size="30" color="white" />}
       />
       <View className=" justify-center items-center flex-1 ">
-        <Text className="text-xl font-bold text-center">List Pills</Text>
+        <Text className="text-xl font-bold text-center">List Medicines</Text>
         {pills.length === 0 ? (
           <View className="bg-gray-300 w-[96%] flex-1 justify-center items-center ">
             <Text className="text-center font-bold">Empty Pill</Text>

@@ -11,6 +11,7 @@ import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 import color from "../../utils/color";
 import ItemPrescription from "../../components/ItemPrescription";
 import * as Notifications from "expo-notifications";
+import { Audio } from "expo-av";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -20,7 +21,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const ListMedicines = ({ medicineData }) => {
+const ListTest = ({ medicineData }) => {
   const [editMedicine, setEditMedicine] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [stateMedicine, setStateMedicine] = useState("");
@@ -46,10 +47,6 @@ const ListMedicines = ({ medicineData }) => {
       setMedicines((prev) => [...prev, medicineData]); // Update 'medicine' state when 'medicines' prop changes
     }
   }, [medicineData]);
-
-  useEffect(() => {
-    scheduleNotifications();
-  }, [medicines]);
 
   const onPressHandler = () => {
     navigation.navigate("PillReminder");
@@ -152,97 +149,50 @@ const ListMedicines = ({ medicineData }) => {
     }
   };
   //// Notification
-
-  async function registerForPushNotificationsAsync() {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
+  let soundObject;
+  const handleNotify = async () => {
+    if (soundObject) {
+      await soundObject.unloadAsync();
     }
-
-    if (finalStatus !== "granted") {
-      console.log("Failed to get push token for notifications!");
-      return;
-    }
+    soundObject = new Audio.Sound();
 
     try {
-      const deviceToken = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log("Device Token:", deviceToken);
-      // You can save the device token in your state or send it to your server for further use
+      await soundObject.loadAsync(require("../../../assets/sounds/sound_medicine.mp3"));
     } catch (error) {
-      console.log("Error getting device token:", error);
+      console.log("Error loading sound:", error);
     }
-  }
+    try {
+      await soundObject.playAsync(); // Play the sound before scheduling the notification
 
-  useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      setNotification(notification);
-    });
-
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log(response);
-    });
-
-    registerForPushNotificationsAsync();
-    scheduleNotifications();
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
-      Notifications.removeNotificationSubscription(responseListener.current);
-    };
-  }, []);
-
-  async function scheduleNotifications() {
-    const currentTime = new Date();
-
-    prescriptionData.forEach((prescription) => {
-      prescription.pill.forEach((pill) => {
-        pill.time.forEach(({ id, time }) => {
-          const [hour, minute] = time.split(":").map(Number);
-          const notificationTime = new Date();
-          notificationTime.setHours(hour);
-          notificationTime.setMinutes(minute);
-          notificationTime.setSeconds(0);
-          notificationTime.setMilliseconds(0);
-
-          if (notificationTime <= currentTime) {
-            // If the notification time is in the past, add one day to the notification time
-            notificationTime.setDate(notificationTime.getDate() + 1);
-          }
-
-          const delay = notificationTime.getTime() - currentTime.getTime();
-          console.log("Setting alarm for:", notificationTime);
-
-          setTimeout(() => {
-            const uniqueId = id + "-" + Date.now(); // Append timestamp for uniqueness
-            schedulePushNotification(uniqueId, time);
-          }, delay);
-        });
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Medicine Reminder",
+          body: "It's time to take your medicine!",
+          sound: true,
+          priority: "high",
+        },
+        trigger: null,
       });
-    });
-  }
 
-  async function schedulePushNotification(id, time) {
-    await Notifications.cancelScheduledNotificationAsync(id.toString());
+      // Add an event listener for the notification click
+      const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
+        if (response.notification.request.identifier === notificationId) {
+          soundObject.unloadAsync(); // Unload the sound when the corresponding notification is clicked
+        }
+      });
 
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Notification",
-        body: `It's time for ${time}!`,
-        data: { id },
-      },
-      trigger: null,
-      sound: "default",
-    });
-  }
+      // Notification successfully scheduled
+    } catch (error) {
+      console.log("Error scheduling notification:", error);
+    }
+  };
 
   return (
     <View>
       {medicines?.length > 0 ? (
-        <View className="mt-1 justify-center items-center h-[600px]">
-          <Text className="text-xl font-bold text-center mb-3">List Prescriptions</Text>
-          <View className="w-full">
+        <View className=" items-center justify-center h-[600px]">
+          <Text className="text-xl font-bold text-center mb-5">List Prescriptions</Text>
+          <View className="w-[98%] h-[80%] mb-5">
             <SwipeListView
               data={medicines}
               renderItem={renderItem}
@@ -260,9 +210,9 @@ const ListMedicines = ({ medicineData }) => {
               useNativeDriver={false}
             />
           </View>
-          <TouchableOpacity className="bg-green-400 p-3" onPress={() => {}}>
+          {/* <TouchableOpacity className="bg-green-400 p-3" onPress={handleNotify}>
             <Text>Notify</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       ) : (
         <View className="flex my-4 justify-center items-center mt-24">
@@ -307,4 +257,4 @@ const ListMedicines = ({ medicineData }) => {
   );
 };
 
-export default ListMedicines;
+export default ListTest;

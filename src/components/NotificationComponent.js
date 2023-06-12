@@ -51,7 +51,7 @@ const NotificationComponent = ({ medicineData }) => {
     Notifications.scheduleNotificationAsync({
       content: {
         title: "Medicine Reminder",
-        body: `It's time to take ${medicine.medicineName}`,
+        body: `It's time to take ${medicine.name}`,
         data: { medicineId: medicine.id },
       },
       trigger: null,

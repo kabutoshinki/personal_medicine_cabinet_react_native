@@ -3,6 +3,7 @@ import React from "react";
 import { FancyAlert } from "react-native-expo-fancy-alerts";
 
 const AlertCustom = (props) => {
+  console.log("alert");
   return (
     <FancyAlert
       visible={props.onOpen}
@@ -29,7 +30,7 @@ const AlertCustom = (props) => {
           </TouchableOpacity>
         </View>
         <View className="flex-1 ml-2">
-          <TouchableOpacity className="bg-gray-500 rounded-lg" onPress={props.onClose}>
+          <TouchableOpacity className="bg-gray-500 rounded-lg" onPress={() => props.onClose()}>
             <Text className="text-center p-3 text-white font-bold">Cancel</Text>
           </TouchableOpacity>
         </View>

@@ -3,7 +3,52 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useEffect } from "react";
 import color from "../../utils/color";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 const Welcome = ({ navigation }) => {
+  useEffect(() => {
+    checkDeviceToken();
+  }, []);
+
+  const checkDeviceToken = async () => {
+    try {
+      const deviceToken = await AsyncStorage.getItem("deviceToken");
+      console.log(deviceToken);
+      if (deviceToken) {
+        registerForPushNotifications();
+      } else {
+        registerForPushNotifications();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const registerForPushNotifications = async () => {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+
+    let finalStatus = existingStatus;
+    console.log(existingStatus);
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      console.log("status");
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      console.log("Failed to get push token for notifications");
+      return;
+    }
+    const deviceToken = (
+      await Notifications.getExpoPushTokenAsync({ projectId: "28285523-5408-41ee-a981-6b1ea007e60d" })
+    ).data;
+
+    try {
+      await AsyncStorage.setItem("deviceToken", deviceToken);
+    } catch (error) {
+      console.log("error");
+    }
+  };
+
   const onPressLogin = () => {
     navigation.navigate("Login");
   };
@@ -17,7 +62,6 @@ const Welcome = ({ navigation }) => {
   const getData = () => {
     try {
       AsyncStorage.getItem("user").then((value) => {
-        console.log(value);
         if (value !== null) {
           navigation.replace("HomeScreen");
         }
@@ -28,13 +72,13 @@ const Welcome = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: color.bg }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: color.main_color }}>
       <View className="flex-1 flex justify-around my-4">
         <Text className="text-white font-bold text-4xl text-center">Let's Get Started</Text>
         <View className="flex-row justify-center">
           <Image
             source={require("../../../assets/images/welcome.png")}
-            style={{ width: 350, height: 350 }}
+            style={{ width: 350, height: 500 }}
             // className="mb-20"
           />
         </View>

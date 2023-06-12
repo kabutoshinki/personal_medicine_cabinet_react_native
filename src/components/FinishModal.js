@@ -1,26 +1,51 @@
 import React, { useState } from "react";
-import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Switch } from "react-native";
 import UploadImage from "./UploadImage";
-import TimeComponentCustom from "./TimeComponentCustom";
-import SelectDropdown from "react-native-select-dropdown";
 import uuid from "react-native-uuid";
 import { useNavigation } from "@react-navigation/native";
-const options = ["LOW", "NORMAL", "HIGH"];
-
-const FinishModal = ({ visible, onCancel, onSave, pill }) => {
-  const [transformed, setTransformed] = useState(false);
+import { TextInput } from "react-native-paper";
+import { PencilIcon } from "react-native-heroicons/outline";
+import color from "../utils/color";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import PeriodModal from "./PeriodModal";
+import { ArrowLeftIcon, CheckIcon } from "react-native-heroicons/solid";
+import { Platform } from "react-native-web";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const FinishModal = ({ visible, onCancel, pill }) => {
   const navigation = useNavigation();
-  const [selectedTime, setSelectedTime] = useState(
-    new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-  );
+  const [startNow, setStartNow] = useState(true);
+  const [startDate, setStartDate] = useState(new Date());
+  const [selectedImageURI, setSelectedImageURI] = useState(null);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [scrollVisible, setScrollVisible] = useState(false);
+  const [formPeriod, setFormPeriod] = useState({
+    numberDate: "1",
+    typeDate: "DAY",
+  });
 
-  const [selectedImageURI, setSelectedImageURI] = useState("../../assets/icons/add_medicine.png");
   const [formData, setFormData] = useState({
     imageURI: selectedImageURI,
-    medicineName: "",
+    name: "",
     pill: pill,
-    priority: "LOW",
+    period: formPeriod?.numberDate + " " + formPeriod?.typeDate,
+    startNow: startNow,
+    startDate: startNow ? new Date().toLocaleDateString("en-GB") : startDate.toLocaleDateString("en-GB"),
+    alarm: true,
+    deviceToken: "",
   });
+
+  //change state switch
+  const toggleSwitch = (value) => {
+    setStartNow((previousState) => !previousState);
+    handleFormChange("startNow", value);
+  };
+
+  // change image select
+  const handleImageSelection = (imageURI) => {
+    setSelectedImageURI(imageURI);
+  };
+
+  // change properties form data
   const handleFormChange = (field, value) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -28,76 +53,152 @@ const FinishModal = ({ visible, onCancel, onSave, pill }) => {
     }));
   };
 
-  const handleSave = () => {
+  const onSavePeriod = (form) => {
+    setFormPeriod(form);
+    setScrollVisible(false);
+
+    const periodValue = form.numberDate + " " + form.typeDate;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      period: periodValue,
+    }));
+  };
+
+  // open modal date
+  const openDatePicker = () => {
+    setIsDatePickerVisible(true);
+  };
+  const openScrollPicker = () => {
+    setScrollVisible(true);
+  };
+
+  //save data
+  const handleSave = async () => {
     const newMedicine = {
       ...formData,
+      imageURI: selectedImageURI,
+      startDate: startNow ? new Date().toLocaleDateString("en-GB") : startDate.toLocaleDateString("en-GB"),
+      deviceToken: await AsyncStorage.getItem("deviceToken"),
       id: uuid.v4(),
+      key: uuid.v4(),
     };
+    // console.log(newMedicine);
     navigation.navigate("Home Page", { medicineData: newMedicine });
   };
-  const handleCancel = () => {
-    // Set the transformed state to false
-    setTransformed(false);
-    // Close the modal
-    onCancel();
+
+  const handleDateChange = (date) => {
+    handleFormChange("startDate", date.toLocaleDateString("en-GB"));
+    setStartDate(date);
+    setIsDatePickerVisible(false);
+  };
+  // close modal
+  const closeDatePicker = () => {
+    setIsDatePickerVisible(false);
+  };
+  const closeScrollPicker = () => {
+    setScrollVisible(false);
   };
 
   return (
-    <Modal visible={visible} onRequestClose={onCancel}>
+    <Modal visible={visible} onRequestClose={onCancel} transparent animationType="slide">
       {/* <View className="w-[96%] mx-2 h-[80%] justify-center items-center mt-12 bg-slate-400"> */}
-      <View className="flex-1 bg-gray-300">
-        <View className="flex-row justify-between items-center mt-10">
-          <Text className="text-center font-bold text-2xl flex-1 ml-6">Medicine</Text>
-          <TouchableOpacity onPress={handleCancel}>
-            <Text className="font-bold text-2xl text-gray-700 mr-4">X</Text>
+      <View className="h-[1000px]  justify-center items-center" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <View
+          className={`flex-row justify-between items-center w-[90%] py-5 rounded-t-lg  ${
+            Platform.OS === "ios" ? "mt-24" : "mt-5"
+          }`}
+          style={{ backgroundColor: color.main_color }}
+        >
+          <TouchableOpacity onPress={onCancel} className="ml-4">
+            <ArrowLeftIcon size={30} color={"white"} />
+          </TouchableOpacity>
+          <Text className="text-center font-bold text-xl flex-1 text-white">Prescription</Text>
+          <TouchableOpacity onPress={handleSave} className="mr-4">
+            <CheckIcon size={30} color={"white"} />
           </TouchableOpacity>
         </View>
-        <View className="flex-1 justify-center items-center form ">
-          <View className="justify-center items-center  w-[120px] h-[120px] border my-2 border-black rounded-2xl">
-            <UploadImage />
-          </View>
-          <View className="flex-1  w-[96%]">
-            <View className="">
-              <Text className="text-gray-700 ml-4 font-bold mb-2">Medicine Name:</Text>
+        <View className="flex-[0.9]   form  w-[90%]">
+          <View className="flex-[0.6] w-full bg-white rounded-b-lg">
+            <UploadImage onImageSelect={handleImageSelection} />
+            <View className="my-4">
               <TextInput
-                placeholder="Medicine Name"
-                className=" bg-gray-100 text-gray-700 rounded-lg p-3 mx-2  "
-                value={formData?.medicineName}
-                onChangeText={(value) => handleFormChange("medicineName", value)}
+                label={"Prescription Name"}
+                left={<TextInput.Icon icon="file-document-outline" />}
+                mode="outlined"
+                className=" text-gray-700 bg-white rounded-lg mx-2"
+                value={formData?.name}
+                onChangeText={(value) => handleFormChange("name", value)}
+              />
+            </View>
+            <View className=" flex-row  justify-between items-center  mx-2 my-1 rounded-lg border-2 border-gray-300">
+              <TextInput
+                placeholder="Start Now"
+                className="bg-white w-28 rounded-lg border-b-0"
+                underlineColor="transparent"
+                editable={false}
+              />
+              <Switch
+                trackColor={{ false: "gray", true: "#34C724" }}
+                value={startNow}
+                thumbColor={startNow ? "white" : "white"}
+                onValueChange={(value) => toggleSwitch(value)}
+                className="mr-5"
+                style={{ transform: [{ scale: 1.5 }] }}
               />
             </View>
 
-            <View className=" mb-2">
-              <Text className="text-gray-700 ml-4 font-bold  mb-2">Priority:</Text>
-
-              <SelectDropdown
-                data={options}
-                onSelect={(selectedItem, index) => {
-                  handleFormChange("priority", selectedItem);
-                }}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  // text represented after item is selected
-                  // if data array is an array of objects then return selectedItem.property to render after item is selected
-                  return selectedItem;
-                }}
-                rowTextForSelection={(item, index) => {
-                  // text represented for each item in dropdown
-                  // if data array is an array of objects then return item.property to represent item in dropdown
-                  return item;
-                }}
-                buttonStyle={styles.dropdown1BtnStyle}
-                // buttonTextStyle={styles.dropdown1BtnTxtStyle}
-                defaultButtonText={formData.priority}
+            <View
+              className="flex-row justify-between items-center  m-2 rounded-lg border-2 border-gray-300"
+              pointerEvents={startNow ? "none" : "auto"}
+            >
+              <TextInput
+                value={formData?.startDate}
+                className=" text-gray-700 rounded-lg flex-1 text-center"
+                editable={false}
+                style={{ backgroundColor: startNow ? "#cccccc" : "white" }}
+                underlineColor="transparent"
+                left={<TextInput.Icon icon="calendar-start" />}
+                right={<TextInput.Icon icon="pencil-outline" onPress={openDatePicker} />}
               />
+
+              {isDatePickerVisible && (
+                <DateTimePickerModal
+                  isVisible={isDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleDateChange}
+                  onCancel={closeDatePicker}
+                  date={startDate}
+                />
+              )}
             </View>
 
-            <View className="flex-row justify-center items-center my-5">
-              <TouchableOpacity onPress={handleCancel} className="bg-red-500 px-5 py-3 rounded-lg w-32 mr-2">
-                <Text className="text-white font-bold text-center">Cancel</Text>
+            <View className=" flex-row  justify-between items-center  mx-2 my-1 rounded-lg border-2 border-gray-300">
+              <TextInput
+                placeholder="Period"
+                className="bg-gray-200 w-28 rounded-sm border-b-0"
+                underlineColor="transparent"
+                editable={false}
+              />
+
+              <TextInput
+                value={formData?.period}
+                className="rounded-lg text-lg border-b-0 bg-white flex-1 text-center"
+                underlineColor="transparent"
+                editable={false}
+                pointerEvents="none"
+              />
+
+              <TouchableOpacity className="mr-4" onPress={openScrollPicker}>
+                <PencilIcon size={25} color={"black"} />
               </TouchableOpacity>
-              <TouchableOpacity className="bg-blue-500 px-5 py-3 rounded-lg w-32" onPress={handleSave}>
-                <Text className=" text-white font-bold text-center">Save</Text>
-              </TouchableOpacity>
+              {scrollVisible && (
+                <PeriodModal
+                  visible={scrollVisible}
+                  onCancel={closeScrollPicker}
+                  initData={formPeriod}
+                  onSave={onSavePeriod}
+                />
+              )}
             </View>
           </View>
         </View>
@@ -105,15 +206,5 @@ const FinishModal = ({ visible, onCancel, onSave, pill }) => {
     </Modal>
   );
 };
-const styles = StyleSheet.create({
-  dropdown1BtnStyle: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#f4f4f4",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#444",
-  },
-  dropdown1BtnTxtStyle: { color: "#444", textAlign: "center" },
-});
+
 export default FinishModal;

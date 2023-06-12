@@ -36,7 +36,7 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <View className="flex-1 bg-white" style={{ backgroundColor: color.bg }}>
+    <View className="flex-1 bg-white" style={{ backgroundColor: color.main_color }}>
       <SafeAreaView className="flex">
         <View className="flex-row justify-start">
           <TouchableOpacity
@@ -48,7 +48,7 @@ const Login = ({ navigation }) => {
         </View>
         <View className="flex-row justify-center">
           <Image
-            source={require("../../../assets/images/login.png")}
+            source={require("../../../assets/images/login_img.png")}
             style={{ width: 200, height: 200 }}
             // className="mb-20"
           />
