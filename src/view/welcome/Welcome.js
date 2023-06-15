@@ -41,9 +41,9 @@ const Welcome = ({ navigation }) => {
     const deviceToken = (
       await Notifications.getExpoPushTokenAsync({ projectId: "28285523-5408-41ee-a981-6b1ea007e60d" })
     ).data;
-
+    const tokenValue = deviceToken.substring(deviceToken.indexOf("[") + 1, deviceToken.indexOf("]"));
     try {
-      await AsyncStorage.setItem("deviceToken", deviceToken);
+      await AsyncStorage.setItem("deviceToken", tokenValue);
     } catch (error) {
       console.log("error");
     }
@@ -63,7 +63,7 @@ const Welcome = ({ navigation }) => {
     try {
       AsyncStorage.getItem("user").then((value) => {
         if (value !== null) {
-          navigation.replace("HomeScreen");
+          navigation.navigate("HomeScreen");
         }
       });
     } catch (error) {

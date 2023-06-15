@@ -12,12 +12,13 @@ import color from "../../utils/color";
 import ItemPrescription from "../../components/ItemPrescription";
 import * as Notifications from "expo-notifications";
 import { Audio } from "expo-av";
-
+import * as prescriptionService from "../../service/prescriptionService";
+import * as historyService from "../../service/historyService";
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
   }),
 });
 
@@ -25,7 +26,7 @@ const ListTest = ({ medicineData }) => {
   const [editMedicine, setEditMedicine] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [stateMedicine, setStateMedicine] = useState("");
-  const [medicines, setMedicines] = useState(prescriptionData);
+  const [medicines, setMedicines] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const navigation = useNavigation();
   const { width: screenWidth } = useWindowDimensions();
@@ -48,6 +49,27 @@ const ListTest = ({ medicineData }) => {
     }
   }, [medicineData]);
 
+  const Prescriptions = async () => {
+    try {
+      const data = await prescriptionService.getRegimen();
+
+      console.log(data);
+    } catch (error) {
+      console.log(error?.response?.data?.message);
+    }
+  };
+  const History = async () => {
+    try {
+      const data = await historyService.getHistory();
+      console.log(data);
+    } catch (error) {
+      console.log(error?.response?.data?.message);
+    }
+  };
+  useEffect(() => {
+    Prescriptions();
+    History();
+  }, []);
   const onPressHandler = () => {
     navigation.navigate("PillReminder");
   };
@@ -148,44 +170,51 @@ const ListTest = ({ medicineData }) => {
       }).start(() => {});
     }
   };
-  //// Notification
-  let soundObject;
-  const handleNotify = async () => {
-    if (soundObject) {
-      await soundObject.unloadAsync();
-    }
-    soundObject = new Audio.Sound();
+  //schedule Notification
 
-    try {
-      await soundObject.loadAsync(require("../../../assets/sounds/sound_medicine.mp3"));
-    } catch (error) {
-      console.log("Error loading sound:", error);
-    }
-    try {
-      await soundObject.playAsync(); // Play the sound before scheduling the notification
+  const scheduleNotifications = async () => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    medicines.forEach((prescription) => {
+      prescription.pill.forEach((pill) => {
+        pill.time.forEach((time) => {
+          const notificationTime = new Date(); // Create a new date object
+          const [hours, minutes] = time.time.split(":"); // Split the time into hours and minutes
+          notificationTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0); // Set the hours and minutes for the notification
+          // console.log("====================================");
+          // console.log(time);
+          // console.log("====================================");
+          const schedulingOptions = {
+            content: {
+              title: "Medicine Reminder",
+              body: `It's time to take ${pill.name} for ${prescription.name}`,
+              sound: true,
+              // sound: "../../../assets/sounds/sound_medicine.wav",
+              // icon: "../../../assets/med-track.png",
+              // color: "#ffffff",
+              android: {
+                sound: true,
+                icon: "../../../assets/med-track.png", // Replace with the name of your icon resource in Android
+                color: "#ffffff", // Set the notification icon color in Android
+                bigPicture: "../../../assets/images/bg_med.jpg", // Replace with the path to your image file
+              },
+            },
+            trigger: {
+              hour: notificationTime.getHours(),
+              minute: notificationTime.getMinutes(),
+              repeats: true,
+            },
+          };
 
-      const notificationId = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Medicine Reminder",
-          body: "It's time to take your medicine!",
-          sound: true,
-          priority: "high",
-        },
-        trigger: null,
+          // Schedule the notification using Expo Notifications
+          Notifications.scheduleNotificationAsync(schedulingOptions);
+        });
       });
-
-      // Add an event listener for the notification click
-      const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
-        if (response.notification.request.identifier === notificationId) {
-          soundObject.unloadAsync(); // Unload the sound when the corresponding notification is clicked
-        }
-      });
-
-      // Notification successfully scheduled
-    } catch (error) {
-      console.log("Error scheduling notification:", error);
-    }
+    });
   };
+
+  useEffect(() => {
+    scheduleNotifications(); // Schedule notifications when the component mounts
+  }, [medicines]);
 
   return (
     <View>
@@ -210,9 +239,6 @@ const ListTest = ({ medicineData }) => {
               useNativeDriver={false}
             />
           </View>
-          {/* <TouchableOpacity className="bg-green-400 p-3" onPress={handleNotify}>
-            <Text>Notify</Text>
-          </TouchableOpacity> */}
         </View>
       ) : (
         <View className="flex my-4 justify-center items-center mt-24">

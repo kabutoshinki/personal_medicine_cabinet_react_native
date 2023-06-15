@@ -1,7 +1,7 @@
 import config from "../../config.json";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 const apiEndPoint = config.apiEndPoint;
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import jwtDecode from "jwt-decode";
 const accessToken = "Access-Token";
 // const options = {

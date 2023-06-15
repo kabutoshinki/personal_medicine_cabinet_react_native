@@ -5,6 +5,8 @@ import { ArrowLeftIcon } from "react-native-heroicons/solid";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import color from "../../utils/color";
 import * as authService from "../../service/authService";
+import Toast from "react-native-toast-message";
+
 const Login = ({ navigation }) => {
   const [formData, setFormData] = useState({
     phonenumber: "012345678",
@@ -22,17 +24,24 @@ const Login = ({ navigation }) => {
     navigation.navigate("Register");
   };
   const onPressHomeHandler = async () => {
-    navigation.replace("HomeScreen");
-    // try {
-    //   const data = await authService.login(formData);
-    //   const user = await authService.getCurrentUser();
-    //   await AsyncStorage.setItem("user", JSON.stringify(user));
-    //   navigation.replace("HomeScreen");
-    //   console.log("check");
-    // } catch (err) {
-    //   console.log("err");
-    //   console.log(err);
-    // }
+    // navigation.replace("HomeScreen");
+    try {
+      const data = await authService.login(formData);
+      const user = await authService.getCurrentUser();
+      await AsyncStorage.setItem("user", JSON.stringify(user));
+      navigation.replace("HomeScreen");
+      Toast.show({
+        type: "success",
+        text1: "Login Success",
+      });
+    } catch (err) {
+      console.log("err");
+      console.log(err.response.data.message);
+      Toast.show({
+        type: "error",
+        text1: `${err.response.data.message}`,
+      });
+    }
   };
 
   return (

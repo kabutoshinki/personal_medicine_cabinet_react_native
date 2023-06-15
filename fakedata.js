@@ -284,8 +284,8 @@ export const prescriptionData = [
         name: "abc",
         note: "",
         time: [
-          { id: 2, time: "05:39" },
-          { id: 1, time: "17:39" },
+          { id: 1, time: "18:01" },
+          { id: 2, time: "18:02" },
         ],
         type: "PILL",
       },
@@ -310,8 +310,8 @@ export const prescriptionData = [
         name: "abcd",
         note: "",
         time: [
-          { id: 2, time: "19:13" },
-          { id: 1, time: "19:14" },
+          { id: 3, time: "24:03" },
+          { id: 1, time: "24:02" },
         ],
         type: "PILL",
       },

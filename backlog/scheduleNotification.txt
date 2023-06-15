@@ -1,0 +1,32 @@
+  const scheduleNotifications = async () => {
+    prescriptionData.forEach((prescription) => {
+      prescription.pill.forEach((pill) => {
+        pill.time.forEach((time) => {
+          const notificationTime = new Date(); // Create a new date object
+          const [hours, minutes] = time.time.split(":"); // Split the time into hours and minutes
+          notificationTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0); // Set the hours and minutes for the notification
+          console.log("====================================");
+          console.log(time);
+          console.log("====================================");
+          const schedulingOptions = {
+            content: {
+              title: "Medicine Reminder",
+              body: `It's time to take ${pill.name} for ${prescription.name}`,
+              sound: true,
+            },
+            trigger: {
+              hour: notificationTime.getHours(),
+              minute: notificationTime.getMinutes(),
+              repeats: true,
+            },
+          };
+
+          Notifications.scheduleNotificationAsync(schedulingOptions);
+        });
+      });
+    });
+  };
+
+  useEffect(() => {
+    scheduleNotifications(); // Schedule notifications when the component mounts
+  }, []);

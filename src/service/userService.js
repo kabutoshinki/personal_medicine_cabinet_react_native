@@ -11,13 +11,9 @@ const accessToken = "Access-Token";
 //   };
 
 export async function register(user) {
-  const { data: jwt } = await axios.post(apiEndpoint + "/", {
-    username: user.username,
+  return await axios.post(apiEndPoint + "user", {
     password: user.password,
     email: user.email,
     phone: user.phone,
-    age: user.age,
-    gender: user.gender,
   });
-  console.log(jwt);
 }

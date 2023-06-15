@@ -9,12 +9,9 @@ const Register = ({ navigation }) => {
     navigation.navigate("Login");
   };
   const [formData, setFormData] = useState({
-    username: "abcdef",
-    password: "123456",
+    password: "",
     email: "huy@gmail.com",
     phone: "0147852369",
-    age: 16,
-    gender: "MALE",
   });
 
   const handleFormChange = (field, value) => {
@@ -27,13 +24,15 @@ const Register = ({ navigation }) => {
   const onPressHomeHandler = async () => {
     // if(formData.email==="kabutoshinki@gmail.com" && formData.password==="123456")
     try {
-      const data = await userService.register(formData);
-
-      navigation.replace("Login");
-      console.log("check");
+      const { data } = await userService.register(formData);
+      console.log("====================================");
+      console.log(data);
+      console.log("====================================");
+      navigation.goBack();
+      // console.log("check");
     } catch (err) {
       console.log("err");
-      console.log(err);
+      console.log(err?.response?.data?.message);
     }
   };
 
@@ -59,26 +58,32 @@ const Register = ({ navigation }) => {
       {/* ======================== */}
       <View className="flex-1 bg-white px-8 pt-8 mt-2" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
         <View className="form space-y-2">
-          <Text className="text-gray-700 ml-4">Full Name</Text>
+          <Text className="text-gray-700 ml-4">Phone</Text>
           <TextInput
             className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-1"
-            value="abcdef"
-            placeholder="Enter Name"
+            value={formData.phone}
+            keyboardType="numeric"
+            placeholder="Enter Phone"
+            minLength={10}
+            maxLength={10}
+            onChangeText={(value) => handleFormChange("phone", value)}
           />
           <Text className="text-gray-700 ml-4">Email Address</Text>
           <TextInput
             className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-1"
-            value="john@gmail.com"
+            value={formData.email}
             placeholder="Enter Email"
+            onChangeText={(value) => handleFormChange("email", value)}
           />
           <Text className="text-gray-700 ml-4">Password</Text>
           <TextInput
             className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-2"
             secureTextEntry
-            value="********"
+            value={formData.password}
             placeholder="Enter Password"
+            onChangeText={(value) => handleFormChange("password", value)}
           />
-          <TouchableOpacity className="py-3 bg-yellow-400 rounded-xl">
+          <TouchableOpacity className="py-3 bg-yellow-400 rounded-xl" onPress={onPressHomeHandler}>
             <Text className="text-lg font-bold text-center text-gray-700">Sign Up</Text>
           </TouchableOpacity>
         </View>
