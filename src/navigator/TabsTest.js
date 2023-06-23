@@ -1,8 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Test1 from "../components/Test1";
-import Test2 from "../components/Test2";
 import Test3 from "../components/Test3";
 import DrawerNavigator from "./DrawerNavigator";
 import {
@@ -15,6 +13,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Reminder from "../view/pill/Reminder";
 import color from "../utils/color";
+import History from "../view/history/History";
+import Progress from "../view/progress/Progress";
 const CustomTabBarButton = ({ children, onPress }) => {
   return (
     <TouchableOpacity
@@ -41,7 +41,6 @@ const CustomTabBarButton = ({ children, onPress }) => {
 };
 
 const TabsTest = () => {
-  console.log("tab");
   const Tab = createBottomTabNavigator();
   const navigation = useNavigation();
   const onPressHandler = () => {
@@ -75,7 +74,7 @@ const TabsTest = () => {
       />
       <Tab.Screen
         name="Progress"
-        component={Test1}
+        component={Progress}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -102,7 +101,7 @@ const TabsTest = () => {
 
       <Tab.Screen
         name="History"
-        component={Test2}
+        component={History}
         options={{
           tabBarIcon: ({ focused }) => (
             <View style={{ alignItems: "center", justifyContent: "center" }}>

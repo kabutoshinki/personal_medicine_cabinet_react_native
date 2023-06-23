@@ -33,7 +33,6 @@ const TimeComponentCustom_2 = ({ onTimeChange, state, timeCurrent }) => {
   };
 
   const handleDeleteTime = (timeBox) => {
-    console.log(timeBox);
     const updatedTimeBoxes = timeBoxes.filter((box) => box.id !== timeBox.id);
     setTimeBoxes(updatedTimeBoxes);
     setModalVisible(false);

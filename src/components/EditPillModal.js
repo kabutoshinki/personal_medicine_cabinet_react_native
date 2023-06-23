@@ -8,13 +8,18 @@ import { options, local_data } from "../../fakedata";
 import { ClipboardDocumentIcon } from "react-native-heroicons/outline";
 import color from "../utils/color";
 import AlertCustom from "./AlertCustom";
-import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
+import { ArrowLeftIcon, CheckIcon, ExclamationTriangleIcon } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { handleTime } from "../utils/dataHandle";
+import { convertTimeArrayToString } from "../utils/dataHandle";
+import * as prescriptionDetailService from "../service/prescriptionDetailService";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
 const EditPillModal = ({ visible, onCancel, onSave, onDelete, item, state }) => {
   const [transformed, setTransformed] = useState(false);
   const [selectedTime, setSelectedTime] = useState();
-  const [selectedImageURI, setSelectedImageURI] = useState(item?.imageURI);
+  const [selectedImageURI, setSelectedImageURI] = useState(item?.medicineUrl);
   const [country, setCountry] = useState(item?.type);
   // const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
@@ -26,10 +31,10 @@ const EditPillModal = ({ visible, onCancel, onSave, onDelete, item, state }) => 
   const [formData, setFormData] = useState({
     ...item,
     imageURI: selectedImageURI,
-    time: item?.time,
-    name: item?.name,
-    type: item?.type,
-    dose: item?.dose,
+    time: handleTime(item),
+    name: item?.medicineName,
+    type: item?.medicineForm,
+    dose: String(item?.takenQuantity),
     note: item?.note,
   });
 
@@ -46,21 +51,27 @@ const EditPillModal = ({ visible, onCancel, onSave, onDelete, item, state }) => 
   const handleImageSelection = (imageURI) => {
     setSelectedImageURI(imageURI);
   };
-  const handleSave = () => {
-    // Perform save action
-    // ...
-    // After saving, close the modal
-    const newPillData = {
-      ...formData,
-      name: formData.name,
-      imageURI: selectedImageURI,
-      time: selectedTime,
-      type: formData.type,
-      dose: formData.dose,
-      note: formData.note,
+  const handleSaving = async () => {
+    const convertTime = convertTimeArrayToString(selectedTime);
+    const newMedicineData = {
+      key: item?.key,
+      regimenId: item?.regimenId,
+      regimenDetailId: item?.regimenDetailId,
+      numberOfMedicine: item?.numberOfMedicine,
+      medicineName: formData.name,
+      medicineUrl: selectedImageURI,
+      ...convertTime,
+      medicineForm: formData.type,
+      takenQuantity: formData.dose,
     };
-    onSave(newPillData);
-    onCancel();
+
+    onSave(newMedicineData);
+    // console.log(newMedicineData);
+    try {
+      await prescriptionDetailService?.editRegimenDetail(newMedicineData);
+    } catch (error) {
+      console.log(error?.response?.data?.message);
+    }
   };
 
   const handleCancel = () => {
@@ -88,7 +99,7 @@ const EditPillModal = ({ visible, onCancel, onSave, onDelete, item, state }) => 
           onClose={toggleAlert}
           icon={<ExclamationTriangleIcon size={30} color={"white"} />}
           color={color.danger}
-          text={`Are you sure you want to delete "${item?.name}" ?`}
+          text={`Are you sure you want to delete "${item?.medicineName}" ?`}
           action={handleDelete}
         />
       )}
@@ -99,17 +110,21 @@ const EditPillModal = ({ visible, onCancel, onSave, onDelete, item, state }) => 
             className="flex-row justify-between items-center py-5 mt-12  "
             style={{ backgroundColor: color.main_color }}
           >
-            <TouchableOpacity onPress={handleCancel}>
-              <Text className="font-bold text-lg text-gray-700 ml-4">Cancel</Text>
+            <TouchableOpacity onPress={onCancel}>
+              <View className="ml-4">
+                <ArrowLeftIcon size={30} color={"white"} />
+              </View>
             </TouchableOpacity>
-            <Text className="text-center font-bold text-xl flex-1 text-white">{state} Medicine</Text>
-            <TouchableOpacity onPress={handleSave}>
-              <Text className="font-bold text-lg text-gray-700 mr-4">Save</Text>
+            <Text className="text-center font-bold text-xl text-white flex-1">Edit Medicine</Text>
+            <TouchableOpacity onPress={handleSaving}>
+              <View className="mr-4">
+                <CheckIcon size={30} color={"white"} />
+              </View>
             </TouchableOpacity>
           </View>
 
           <View className="flex-1 h-full w-full rounded-b-lg bg-white">
-            <UploadImage onImageSelect={handleImageSelection} state={state} imageURI={item?.imageURI} />
+            <UploadImage onImageSelect={handleImageSelection} imageURI={formData?.medicineUrl} />
             <View className="">
               <TextInput
                 label={"Medicine Name"}
@@ -117,7 +132,6 @@ const EditPillModal = ({ visible, onCancel, onSave, onDelete, item, state }) => 
                 mode="outlined"
                 className=" text-gray-700 rounded-lg mx-2"
                 value={formData?.name}
-                editable={state === "Edit" ? true : false}
                 onChangeText={(value) => handleFormChange("name", value)}
                 // onChangeText={(value) => handleFormChange("pillName", value)}
               />
@@ -192,7 +206,7 @@ const EditPillModal = ({ visible, onCancel, onSave, onDelete, item, state }) => 
             </View>
             <View>
               <View className="flex-row justify-between items-center">
-                <TimeComponentCustom onTimeChange={handleTimeChange} timeCurrent={item?.time} />
+                <TimeComponentCustom onTimeChange={handleTimeChange} timeCurrent={formData?.time} />
               </View>
             </View>
             <View className="flex-row justify-center items-center my-4">

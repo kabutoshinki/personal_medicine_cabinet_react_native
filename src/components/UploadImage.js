@@ -1,6 +1,5 @@
-import { View, Text, TouchableOpacity, Platform, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, Platform, TextInput, Image } from "react-native";
 import React, { useRef, useState } from "react";
-import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import BottomSheetCustom from "./BottomSheetCustom";
 import { CameraIcon } from "react-native-heroicons/solid";
@@ -67,9 +66,9 @@ const UploadImage = ({ onImageSelect, state, imageURI }) => {
       >
         <View className="h-full w-full justify-center items-center">
           {selectedImageURI ? (
-            <Image source={{ uri: selectedImageURI }} contentFit="cover" className="rounded-sm h-full  w-full" />
+            <Image source={{ uri: selectedImageURI }} resizeMode="cover" className="rounded-md h-full  w-full" />
           ) : imageURI ? (
-            <Image source={{ uri: imageURI }} contentFit="cover" className="rounded-lg w-full h-full" />
+            <Image source={{ uri: imageURI }} resizeMode="cover" className="rounded-md w-full h-full" />
           ) : (
             <CameraIcon size={50} color={"white"} />
           )}

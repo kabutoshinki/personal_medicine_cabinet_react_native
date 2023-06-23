@@ -49,6 +49,7 @@ const ItemPrescription = (props) => {
     console.log(value);
     handleFormChange("alarm", value);
   };
+
   return (
     <Animated.View className="w-[98%] justify-center items-center mx-auto  h-[120px]">
       <Card className="flex-auto m-1 w-full">
@@ -57,7 +58,7 @@ const ItemPrescription = (props) => {
           <TakeMedicineModal
             onOpen={takeMedVisible}
             onCancel={handleCancel}
-            item={formData?.pill}
+            item={formData}
             onOption={() => onOption(formData, "Edit")}
           />
         )}
@@ -65,8 +66,8 @@ const ItemPrescription = (props) => {
           <Card.Content className="">
             <View className="flex-row justify-center items-center h-full">
               <View className="flex-[0.3]  w-full h-full justify-center items-center">
-                {item?.imageURI ? (
-                  <Image source={{ uri: item?.imageURI }} resizeMode="cover" className="w-24 h-20 rounded-lg" />
+                {item?.image ? (
+                  <Image source={{ uri: item?.image }} resizeMode="cover" className="w-24 h-20 rounded-lg" />
                 ) : (
                   <Image
                     source={require("../../assets/images/med_tracking.png")}
@@ -80,18 +81,20 @@ const ItemPrescription = (props) => {
                   <Image source={require("../../assets/icons/prescription.png")} className="w-6 h-6" />
                   <Text className="font-bold text-lg mr-2 ml-1">:</Text>
                   <Text className="text-2xl font-bold" style={{ color: color.main_color }}>
-                    {item?.name}
+                    {item?.regimenName}
                   </Text>
                 </View>
                 <View className="flex-row items-center my-2">
                   <Image source={require("../../assets/icons/medicine.png")} className="w-6 h-6" />
                   <Text className="font-bold text-lg mr-2 ml-1">:</Text>
-                  <Text className="font-bold text-lg text-gray-600"> {item?.pill?.length}</Text>
+                  <Text className="font-bold text-lg text-gray-600"> {item?.totalTypeMedicine}</Text>
                 </View>
                 <View className="flex-row items-center">
                   <Image source={require("../../assets/icons/duration.png")} className="w-6 h-6" />
                   <Text className="font-bold text-lg mr-2 ml-1">:</Text>
-                  <Text className="font-bold text-lg text-gray-600"> {item?.period}</Text>
+                  <Text className="font-bold text-lg text-gray-600">
+                    {item?.dosageRegimen} {item?.period}
+                  </Text>
                 </View>
               </View>
               <View>

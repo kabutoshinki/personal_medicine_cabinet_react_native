@@ -11,6 +11,10 @@ import PeriodModal from "./PeriodModal";
 import { ArrowLeftIcon, CheckIcon } from "react-native-heroicons/solid";
 import { Platform } from "react-native-web";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as prescriptionService from "../service/prescriptionService";
+import RequestPayModal from "./RequestPayModal";
+import PaymentModal from "./PaymentModal";
+
 const FinishModal = ({ visible, onCancel, pill }) => {
   const navigation = useNavigation();
   const [startNow, setStartNow] = useState(true);
@@ -18,6 +22,7 @@ const FinishModal = ({ visible, onCancel, pill }) => {
   const [selectedImageURI, setSelectedImageURI] = useState(null);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [scrollVisible, setScrollVisible] = useState(false);
+  const [requestVisible, setRequestVisible] = useState(false);
   const [formPeriod, setFormPeriod] = useState({
     numberDate: "1",
     typeDate: "DAY",
@@ -72,6 +77,23 @@ const FinishModal = ({ visible, onCancel, pill }) => {
     setScrollVisible(true);
   };
 
+  function convertTimeArrayToString(timeArray) {
+    const timeProperties = ["firstTime", "secondTime", "thirdTime", "fourthTime"];
+    const convertedTimes = {};
+
+    timeProperties.forEach((property, index) => {
+      if (index < timeArray.length) {
+        const timeObject = timeArray[index];
+        const time = timeObject.time || ""; // Handle undefined time values
+        if (time !== "") {
+          convertedTimes[property] = time;
+        }
+      }
+    });
+
+    return convertedTimes;
+  }
+
   //save data
   const handleSave = async () => {
     const newMedicine = {
@@ -81,9 +103,28 @@ const FinishModal = ({ visible, onCancel, pill }) => {
       deviceToken: await AsyncStorage.getItem("deviceToken"),
       id: uuid.v4(),
       key: uuid.v4(),
+      regimentDetailRequests: formData.pill.map((pill) => {
+        const convertedTimes = convertTimeArrayToString(pill.time);
+        return {
+          takenQuantity: parseInt(pill?.dose),
+          ...convertedTimes,
+          medicineName: pill?.name,
+          medicineForm: pill?.type,
+          medicineUrl:
+            pill?.imageURI || "https://img.freepik.com/premium-vector/red-white-capsule-pill_92242-102.jpg?w=2000",
+        };
+      }),
     };
+    try {
+      await prescriptionService.postRegimen(newMedicine);
+      navigation.navigate("Home Page");
+    } catch (error) {
+      setRequestVisible(true);
+      console.log(error?.response?.data?.message);
+    }
+
     // console.log(newMedicine);
-    navigation.navigate("Home Page", { medicineData: newMedicine });
+    // navigation.navigate("Home Page", { medicineData: newMedicine });
   };
 
   const handleDateChange = (date) => {
@@ -91,6 +132,7 @@ const FinishModal = ({ visible, onCancel, pill }) => {
     setStartDate(date);
     setIsDatePickerVisible(false);
   };
+
   // close modal
   const closeDatePicker = () => {
     setIsDatePickerVisible(false);
@@ -102,6 +144,7 @@ const FinishModal = ({ visible, onCancel, pill }) => {
   return (
     <Modal visible={visible} onRequestClose={onCancel} transparent animationType="slide">
       {/* <View className="w-[96%] mx-2 h-[80%] justify-center items-center mt-12 bg-slate-400"> */}
+      {requestVisible && <PaymentModal onOpen={requestVisible} onCancel={() => setRequestVisible(false)} />}
       <View className="h-[1000px]  justify-center items-center" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
         <View
           className={`flex-row justify-between items-center w-[90%] py-5 rounded-t-lg  ${

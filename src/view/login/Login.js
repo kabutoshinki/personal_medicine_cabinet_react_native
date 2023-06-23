@@ -35,11 +35,11 @@ const Login = ({ navigation }) => {
         text1: "Login Success",
       });
     } catch (err) {
-      console.log("err");
-      console.log(err.response.data.message);
+      console.log("err login");
+      console.log(err?.response?.data?.message);
       Toast.show({
         type: "error",
-        text1: `${err.response.data.message}`,
+        text1: `${err?.response?.data?.message}`,
       });
     }
   };
@@ -58,13 +58,13 @@ const Login = ({ navigation }) => {
         <View className="flex-row justify-center">
           <Image
             source={require("../../../assets/images/login_img.png")}
-            style={{ width: 200, height: 200 }}
+            style={{ width: 300, height: 250 }}
             // className="mb-20"
           />
         </View>
       </SafeAreaView>
       {/* ======================== */}
-      <View className="flex-1 bg-white px-6 pt-6" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
+      <View className="flex-1 bg-white px-6 pt-6 mt-10" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
         <View className="form space-y-2">
           <Text className="text-gray-700 ml-4">Phone</Text>
           <TextInput
@@ -89,7 +89,7 @@ const Login = ({ navigation }) => {
             <Text className="text-lg font-bold text-center text-gray-700">Login</Text>
           </TouchableOpacity>
         </View>
-        <Text className="text-sm text-gray-700 font-bold text-center py-3">Or</Text>
+        {/* <Text className="text-sm text-gray-700 font-bold text-center py-3">Or</Text>
         <View className="flex-row justify-center space-x-12">
           <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl">
             <Image source={require("../../../assets/icons/google.png")} className="w-10 h-10" />
@@ -100,7 +100,7 @@ const Login = ({ navigation }) => {
           <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl">
             <Image source={require("../../../assets/icons/apple.png")} className="w-10 h-10" />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View className="flex-row justify-center items-center mt-5">
           <Text className=" font-semibold">Don't have an account? </Text>
           <TouchableOpacity onPress={onPressRegister}>

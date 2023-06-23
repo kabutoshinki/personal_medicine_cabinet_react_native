@@ -110,7 +110,7 @@ const HiddenItem = (props) => {
           onClose={() => handleClose(rowMap, item?.key)}
           icon={<ExclamationTriangleIcon size={30} color={"white"} />}
           color={color.danger}
-          text={`Are you sure you want to delete "${item?.name}" ?`}
+          text={`Are you sure you want to delete "${item?.regimenName}" ?`}
           action={() => deleteRow(item?.key)}
         />
       )}

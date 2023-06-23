@@ -29,7 +29,6 @@ const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
   const [editTime, setEditTime] = useState({});
   const [editTimeVisible, setEditTimeVisible] = useState(false);
   useEffect(() => {
-    console.log("onTimeChange");
     onTimeChange(timeBoxes);
   }, [timeBoxes]);
   const handlePopup = (timeBox) => {
@@ -49,7 +48,6 @@ const TimeComponentCustom = ({ onTimeChange, state, timeCurrent }) => {
   };
 
   const handleDeleteTime = (timeBox) => {
-    console.log(timeBox);
     const updatedTimeBoxes = timeBoxes.filter((box) => box.id !== timeBox.id);
     setTimeBoxes(updatedTimeBoxes);
     setModalVisible(false);

@@ -1,6 +1,5 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from "../view/home/Home";
-import Test4 from "../components/Test4";
 import Login from "../view/login/Login";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CustomDrawer from "../components/CustomDrawer";
@@ -9,7 +8,6 @@ import Profile from "../view/profile/Profile";
 import color from "../utils/color";
 const Drawer = createDrawerNavigator();
 const DrawerNavigator = () => {
-  console.log("Drawer");
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawer {...props} />}

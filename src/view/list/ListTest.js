@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, Image, useWindowDimensions, Animated, Alert } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Card, Switch } from "react-native-paper";
 import MedicineModal from "../../components/MedicineModal";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { medicineTimeData, prescriptionData } from "../../../fakedata";
 import { SwipeListView } from "react-native-swipe-list-view";
 import HiddenItem from "../../components/HiddenItem";
@@ -14,6 +14,9 @@ import * as Notifications from "expo-notifications";
 import { Audio } from "expo-av";
 import * as prescriptionService from "../../service/prescriptionService";
 import * as historyService from "../../service/historyService";
+import uuid from "react-native-uuid";
+import { AppContext } from "../../context/AppContext";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -22,7 +25,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const ListTest = ({ medicineData }) => {
+const ListTest = () => {
   const [editMedicine, setEditMedicine] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [stateMedicine, setStateMedicine] = useState("");
@@ -33,9 +36,7 @@ const ListTest = ({ medicineData }) => {
   const [key, setKey] = useState(null);
   const [getRowMap, setGetRowMap] = useState(null);
   const [visible, setVisible] = React.useState(false);
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  const isFocused = useIsFocused();
 
   const toggleAlert = () => {
     setVisible((prevVisible) => !prevVisible);
@@ -43,33 +44,27 @@ const ListTest = ({ medicineData }) => {
 
   const toggleAlertRef = useRef(null);
   toggleAlertRef.current = toggleAlert;
-  useEffect(() => {
-    if (medicineData) {
-      setMedicines((prev) => [...prev, medicineData]); // Update 'medicine' state when 'medicines' prop changes
-    }
-  }, [medicineData]);
 
   const Prescriptions = async () => {
     try {
-      const data = await prescriptionService.getRegimen();
-
-      console.log(data);
+      const { data } = await prescriptionService.getRegimen();
+      const updatedMedicines = data.map((item) => ({ ...item, key: uuid.v4(), alarm: true }));
+      setMedicines(updatedMedicines);
     } catch (error) {
       console.log(error?.response?.data?.message);
+      setMedicines([]);
     }
   };
   const History = async () => {
     try {
       const data = await historyService.getHistory();
-      console.log(data);
     } catch (error) {
       console.log(error?.response?.data?.message);
     }
   };
   useEffect(() => {
     Prescriptions();
-    History();
-  }, []);
+  }, [isFocused]);
   const onPressHandler = () => {
     navigation.navigate("PillReminder");
   };
@@ -85,7 +80,7 @@ const ListTest = ({ medicineData }) => {
 
   const deletePrescription = (id) => {
     setMedicines((prevPrescript) => {
-      const updatedPills = prevPrescript.filter((prevPrescript) => prevPrescript.id !== id);
+      const updatedPills = prevPrescript.filter((prevPrescript) => prevPrescript.regimenId !== id);
       return updatedPills;
     });
   };
@@ -93,7 +88,7 @@ const ListTest = ({ medicineData }) => {
   const handleSave = (updatedItem) => {
     setMedicines((prevMedicines) => {
       const updatedMedicines = prevMedicines.map((medicine) =>
-        medicine.id === updatedItem.id ? updatedItem : medicine
+        medicine.regimenId === updatedItem.regimenId ? updatedItem : medicine
       );
       return updatedMedicines;
     });
@@ -105,17 +100,24 @@ const ListTest = ({ medicineData }) => {
     rowMap[rowKey].closeRow();
   };
 
-  const deleteRow = (rowKey) => {
+  const deleteRow = async (rowKey) => {
     if (medicines) {
       const deletedMedicine = medicines.find((item) => item.key === rowKey);
+
       if (deletedMedicine) {
-        const updatedMedicines = medicines.filter((item) => item.key !== rowKey);
-        setMedicines(updatedMedicines);
+        try {
+          await prescriptionService.deleteRegimen(deletedMedicine?.regimenId);
+          const updatedMedicines = medicines.filter((item) => item.key !== rowKey);
+          setMedicines(updatedMedicines);
+        } catch (error) {
+          console.log(error?.response?.data?.message);
+        }
       }
     }
   };
-  handleDelete = (rowKey) => {
+  handleDelete = async (rowKey) => {
     deleteRow(rowKey);
+
     setVisible(false);
   };
   const changeStateIsOpenModal = (boolean) => {
@@ -153,10 +155,12 @@ const ListTest = ({ medicineData }) => {
       />
     );
   };
+
   const onRightActionStatusChange = () => {};
 
   const swipeGestureEnded = (rowKey, data) => {
     const rowHeightAnimatedValue = new Animated.Value(100);
+
     if (data.translateX < -220) {
       setTimeout(() => {
         setKey(rowKey);
@@ -174,15 +178,13 @@ const ListTest = ({ medicineData }) => {
 
   const scheduleNotifications = async () => {
     await Notifications.cancelAllScheduledNotificationsAsync();
-    medicines.forEach((prescription) => {
-      prescription.pill.forEach((pill) => {
-        pill.time.forEach((time) => {
+    medicines?.forEach((prescription) => {
+      prescription?.pill?.forEach((pill) => {
+        pill?.time?.forEach((time) => {
           const notificationTime = new Date(); // Create a new date object
           const [hours, minutes] = time.time.split(":"); // Split the time into hours and minutes
           notificationTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0); // Set the hours and minutes for the notification
-          // console.log("====================================");
-          // console.log(time);
-          // console.log("====================================");
+
           const schedulingOptions = {
             content: {
               title: "Medicine Reminder",

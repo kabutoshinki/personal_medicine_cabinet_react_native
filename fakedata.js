@@ -324,3 +324,52 @@ export const prescriptionData = [
 //   { id: 1, name: "a", pill: [{id:1,name:"a",time:[{id:1,time:"12:00"},{id:2,time:"13:00"}]}, {id:2,name:"b",time:[{id:1,time:"13:00"},{id:2,time:"14:00"}]}] },
 //   { id: 2, name: "b", pill: [{id:1,name:"c",time:[{id:1,time:"15:00"},{id:2,time:"16:00"}]}, {id:2,name:"d",time:[{id:1,time:"17:00"},{id:2,time:"18:00"}]}] },
 // ];
+
+export const listMedicinesData = [
+  {
+    id: "1",
+    image: "https://cdn.tgdd.vn/Products/Images/10244/129157/panadol-extra-hop180v-2-1.jpg",
+    name: "Panadol",
+    description:
+      "This drug is used to treat mild to moderate pain (from headaches, menstrual periods, toothaches, back pain, osteoarthritis, or cold/flu aches and pain) and to reduce fever.",
+    sideEffect: "dizziness,fatigue,headaches,weakness,lightheadedness...",
+    type: "PILL",
+  },
+  {
+    id: "2",
+    image: "https://vinmec-prod.s3.amazonaws.com/images/20221030_153408_105338_00o0h6W4.max-1800x1800.jpg",
+    name: "Cephalexin",
+    description:
+      "Cephalexin is used to treat bacterial infections in many different parts of the body. It belongs to the class of medicines known as cephalosporin antibiotics. It works by killing bacteria or preventing their growth. However, this medicine will not work for colds, flu, or other virus infections.",
+    sideEffect: "Diarrhea,cough,dizziness,headache,nausea and vomiting...",
+    type: "PILL",
+  },
+  {
+    id: "3",
+    image: "https://nhatnamyvien.com/wp-content/uploads/2021/05/thuoc-dieu-tri-vi-khuan-hp-amoxicillin.jpg",
+    name: "Amoxicillin",
+    description:
+      "Amoxicillin, also sometimes spelled amoxycillin, is an antibiotic useful in the treatment of certain bacterial infections.",
+    sideEffect: "rash,skin blisters or peeling,itching,hives,wheezing...",
+    type: "PILL",
+  },
+  {
+    id: "4",
+    image: "https://img.cand.com.vn/resize/800x800/NewFiles/Images/2023/02/20/Paracetamol-1676893026811.jpeg",
+    name: "Paracetamol",
+    description:
+      "Paracetamol (Panadol, Calpol, Alvedon) is an analgesic and antipyretic drug that is used to temporarily relieve mild-to-moderate pain and fever.",
+    sideEffect:
+      "Skin rash or peeling, or mouth ulcers,Breathing problems,Unexplained bruising or bleeding or becoming unusually tired...",
+    type: "PILL",
+  },
+  {
+    id: "5",
+    image: "https://cdn.tgdd.vn/Products/Images/10036/153417/cetirizin-10mg-mac-dinh-2.jpg",
+    name: "Cetirizin",
+    description:
+      "Cetirizine is an antihistamine medicine that helps the symptoms of allergies.It's used to treat:eczema,fever,hives,some food allergies...",
+    sideEffect: "headaches,dry mouth,nausea,feeling dizzy,diarrhoea,sore throat,sneezing or blocked and runny nose...",
+    type: "POWDER",
+  },
+];

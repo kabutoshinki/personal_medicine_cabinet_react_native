@@ -1,20 +1,24 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, View, Text, TouchableOpacity, Switch, useWindowDimensions, Animated, Platform } from "react-native";
 import UploadImage from "./UploadImage";
 import { TextInput } from "react-native-paper";
+import EditPillModal from "./EditPillModal";
+import ItemComponent from "./ItemComponent";
 import color from "../utils/color";
 import { BellAlertIcon } from "react-native-heroicons/outline";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import PeriodModal from "./PeriodModal";
+import HiddenItem from "./HiddenItem";
+import { SwipeListView } from "react-native-swipe-list-view";
 import { ArrowLeftIcon, CheckIcon, ExclamationTriangleIcon, PlusIcon } from "react-native-heroicons/solid";
 import AddMedicineModal from "./AddMedicineModal";
 import AlertCustom from "./AlertCustom";
 import * as prescriptionService from "../service/prescriptionService";
 import * as prescriptionDetailService from "../service/prescriptionDetailService";
 import uuid from "react-native-uuid";
+import ItemComponentApi from "./ItemComponentApi";
 import { changeDateFormat } from "../utils/dataHandle";
 import PrescriptionMedicineList from "./PrescriptionMedicineList";
-import { AppContext } from "../context/AppContext";
 
 const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
   const [statePill, setStatePill] = useState("");
@@ -32,7 +36,6 @@ const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
   const toggleAlert = React.useCallback(() => {
     setVisibleAlert(!visibleAlert);
   }, [visibleAlert]);
-  const { stateChange, setStateChange } = useContext(AppContext);
 
   const getStartDate = item?.startDate; // "2023-06-19"
   const dateParts = getStartDate.split("-"); // ["2023", "06", "19"]
@@ -52,9 +55,14 @@ const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
     setIsEnabled((previousState) => !previousState);
     handleFormChange("alarm", value);
   };
-
+  const PrescriptionItems = async () => {
+    const { data } = await prescriptionDetailService.getRegimenDetailsList(item?.regimenId);
+    const updatedMedicines = data.map((item) => ({ ...item, key: uuid.v4(), alarm: true }));
+    setListMedicine(updatedMedicines);
+  };
   useEffect(() => {
     setImageURI(item?.image);
+    PrescriptionItems();
   }, []);
 
   const [numberDate, typeDate] = formData?.period.split(" ");
@@ -76,17 +84,44 @@ const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
     setIsDatePickerVisible(false);
   };
 
+  const handleSaveMed = (form) => {
+    setListMedicine((prevPills) => [...prevPills, form]);
+    setAddMedVisible(false);
+  };
+
+  const handleSaveEditMed = (updatedItem) => {
+    setListMedicine((prevPills) => prevPills.map((pill) => (pill.id === updatedItem.id ? updatedItem : pill)));
+
+    setEditingPill(null);
+    setModalVisible(false);
+  };
+
   const handleImageSelection = (image) => {
     setImageURI(image);
     handleFormChange("imageURI", image);
   };
 
+  const deletePill = (id) => {
+    setListMedicine((prevPills) => {
+      const updatedPills = prevPills.filter((pill) => pill.id !== id);
+      return updatedPills;
+    });
+  };
+
+  const optionPill = (item, state) => {
+    setEditingPill(item);
+    setModalVisible(true);
+    setStatePill(state);
+  };
   const openDatePicker = () => {
     setIsDatePickerVisible(true);
   };
 
   const openPeriod = () => {
     setPeriodVisible(true);
+  };
+  const openAddMedVisible = () => {
+    setAddMedVisible(true);
   };
 
   const handleSavePrescription = async () => {
@@ -103,7 +138,6 @@ const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
       totalTypeMedicine: formData?.totalTypeMedicine,
     };
     // console.log(newPrescriptionData);
-    setStateChange((pre) => !pre);
     onSave(newPrescriptionData);
     try {
       await prescriptionService.editRegimen(newPrescriptionData);
@@ -122,6 +156,47 @@ const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
     }));
   };
 
+  const deleteRow = (rowKey) => {
+    if (listMedicine) {
+      const deletedMedicine = listMedicine.find((item) => item.key === rowKey);
+      if (deletedMedicine) {
+        const updatedMedicines = listMedicine.filter((item) => item.key !== rowKey);
+        setListMedicine(updatedMedicines);
+        handleFormChange("pill", updatedMedicines);
+      }
+    }
+  };
+  const renderItem = ({ item }) => <ItemComponentApi item={item} onDelete={deletePill} onOption={optionPill} />;
+  const renderHiddenItem = (data, rowMap) => {
+    const rowActionAnimatedValue = new Animated.Value(75);
+    const rowHeightAnimatedValue = new Animated.Value(115);
+    const { item } = data;
+
+    return (
+      <HiddenItem
+        item={item}
+        rowMap={rowMap}
+        onOption={optionPill}
+        rowActionAnimatedValue={rowActionAnimatedValue}
+        rowHeightAnimatedValue={rowHeightAnimatedValue}
+        deleteRow={deleteRow}
+      />
+    );
+  };
+
+  const onRightActionStatusChange = () => {};
+  const swipeGestureEnded = (rowKey, data) => {
+    const rowHeightAnimatedValue = new Animated.Value(90);
+    if (data.translateX < -220) {
+      Animated.timing(rowHeightAnimatedValue, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start(() => {
+        deleteRow(rowKey);
+      });
+    }
+  };
   const handleDeletePrescription = async () => {
     try {
       await prescriptionService.deleteRegimen(item?.regimenId);
@@ -240,6 +315,37 @@ const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
               </View>
             </View>
 
+            {/* <View className=" mb-4 justify-center items-center h-[300px]">
+              <View className="flex-row w-full items-center justify-between">
+                <View className="ml-4">
+                  <Text className="text-gray-700 text-3xl font-bold  text-center">List Medicines</Text>
+                </View>
+
+                <TouchableOpacity
+                  style={{ backgroundColor: color.success }}
+                  className="mr-4 rounded-lg p-2 my-2"
+                  onPress={openAddMedVisible}
+                >
+                  <PlusIcon size={30} color={"white"} />
+                </TouchableOpacity>
+              </View>
+
+              <SwipeListView
+                data={listMedicine}
+                renderItem={renderItem}
+                renderHiddenItem={renderHiddenItem}
+                disableRightSwipe
+                rightOpenValue={-150}
+                stopRightSwipe={-300}
+                rightActivationValue={-220}
+                rightActionValue={-screenWidth}
+                onRightActionStatusChange={onRightActionStatusChange}
+                swipeGestureEnded={swipeGestureEnded}
+                swipeToOpenPercent={10}
+                swipeToClosePercent={10}
+                useNativeDriver={false}
+              />
+            </View> */}
             <PrescriptionMedicineList item={item} />
             <View className="flex-row justify-center items-center mb-2">
               <TouchableOpacity onPress={toggleAlert} className="bg-red-500 flex-1 py-4 rounded-lg mx-2">
@@ -249,6 +355,9 @@ const MedicineModal = ({ visible, onCancel, onDelete, item, onSave }) => {
           </View>
         </View>
       </View>
+      {addMedVisible && (
+        <AddMedicineModal onOpen={addMedVisible} onCancel={() => setAddMedVisible(false)} onSave={handleSaveMed} />
+      )}
     </Modal>
   );
 };

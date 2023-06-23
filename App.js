@@ -8,6 +8,7 @@ import Home from "./src/view/home/Home";
 import StackNavigator from "./src/navigator/StackNavigator";
 import TabsNavigator from "./src/navigator/TabsNavigator";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+import { AppProvider } from "./src/context/AppContext";
 const Stack = createNativeStackNavigator();
 const toastConfig = {
   /*

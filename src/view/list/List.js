@@ -9,6 +9,8 @@ import ItemComponent from "../../components/ItemComponent";
 import FinishModal from "../../components/FinishModal";
 import { SwipeListView } from "react-native-swipe-list-view";
 import HiddenItem from "../../components/HiddenItem";
+import color from "../../utils/color";
+import RequestPayModal from "../../components/RequestPayModal";
 const List = ({ listPills, setPage, updateListPills }) => {
   const [pills, setPills] = useState(listPills);
   const [editingPill, setEditingPill] = useState(null);
@@ -129,10 +131,13 @@ const List = ({ listPills, setPage, updateListPills }) => {
             Add More
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity className="bg-green-400 py-4 rounded-lg">
-          <Text className="text-center font-bold text-white text-xl" onPress={() => setFinishVisible(true)}>
-            Finish
-          </Text>
+        <TouchableOpacity
+          className="py-4 rounded-lg"
+          style={{ backgroundColor: pills?.length != 0 ? color.success : "gray" }}
+          onPress={() => setFinishVisible(true)}
+          disabled={pills?.length != 0 ? false : true}
+        >
+          <Text className="text-center font-bold text-white text-xl">Finish</Text>
         </TouchableOpacity>
       </View>
 

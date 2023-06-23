@@ -2,21 +2,22 @@ import config from "../../config.json";
 import axios from "axios";
 const apiEndPoint = config.apiEndPoint;
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAuthorizationHeader } from "../utils/authorization";
 let accessToken = AsyncStorage.getItem("Access-Token");
 let user = AsyncStorage.getItem("user");
-import { getAuthorizationHeader } from "../utils/authorization";
 
-export async function getMedicines(query) {
+export async function getPaymentPlan() {
   const options = {
     headers: await getAuthorizationHeader(),
   };
 
-  return axios.get(apiEndPoint + `medicine/${query}`, options);
+  return axios.get(apiEndPoint + `payment`, options);
 }
-export async function postMedicine(form) {
+
+export async function transactionPayment(formPayment) {
   const options = {
     headers: await getAuthorizationHeader(),
   };
 
-  return axios.post(apiEndPoint + `medicine`, form, options);
+  return axios.post(apiEndPoint + `transaction`, formPayment, options);
 }

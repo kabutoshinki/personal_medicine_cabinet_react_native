@@ -13,10 +13,11 @@ const accessToken = "Access-Token";
 export async function login(user) {
   console.log("user");
   console.log(user);
-  const { data } = await axios.post("http://10.0.2.2:8080/api/authentication", {
+  const { data } = await axios.post(apiEndPoint + `authentication`, {
     phonenumber: user.phonenumber,
     password: user.password,
   });
+  console.log(data);
   await AsyncStorage.setItem(accessToken, data?.accessToken);
 
   // await AsyncStorage.setItem(accessToken, jwt.token);

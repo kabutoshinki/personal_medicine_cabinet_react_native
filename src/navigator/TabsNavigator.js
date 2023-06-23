@@ -1,9 +1,6 @@
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Test1 from "../components/Test1";
-import Test2 from "../components/Test2";
-import Test3 from "../components/Test3";
 import DrawerNavigator from "./DrawerNavigator";
 import {
   PlusCircleIcon,
@@ -14,6 +11,9 @@ import {
 } from "react-native-heroicons/solid";
 
 import Reminder from "../view/pill/Reminder";
+import Progress from "../view/progress/Progress";
+import History from "../view/history/History";
+import Profile from "../view/profile/Profile";
 
 const CustomTabBarButton = ({ children, onPress }) => {
   // <TouchableOpacity
@@ -93,10 +93,10 @@ const TabsNavigator = () => {
       })}
     >
       <Tab.Screen name="Home" component={DrawerNavigator} />
-      <Tab.Screen name="Progress" component={Test1} />
+      <Tab.Screen name="Progress" component={Progress} />
       <Tab.Screen name="Post" component={Reminder} />
-      <Tab.Screen name="Setting" component={Test2} />
-      <Tab.Screen name="Profile" component={Test3} />
+      <Tab.Screen name="History" component={History} />
+      <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
 };

@@ -1,4 +1,4 @@
-import { View, Image } from "react-native";
+import { View, Image, TouchableOpacity, Text } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { MagnifyingGlassIcon } from "react-native-heroicons/solid";
 import Header from "../../components/Header";
@@ -6,11 +6,10 @@ import { medicineTimeData } from "../../../fakedata.js";
 import { useRoute } from "@react-navigation/native";
 import ListMedicines from "../list/ListMedicines";
 import ListTest from "../list/ListTest";
+import HeaderCustom from "../../components/HeaderCustom";
+import { AppProvider } from "../../context/AppContext";
 
 const Home = ({ navigation }) => {
-  const route = useRoute();
-
-  const { medicineData } = route.params || { medicineData: null };
   const [medicine, setMedicine] = useState([]);
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -18,12 +17,6 @@ const Home = ({ navigation }) => {
   const [editMedicine, setEditMedicine] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [stateMedicine, setStateMedicine] = useState("");
-
-  useEffect(() => {
-    if (medicineData) {
-      setMedicine((prev) => [...prev, medicineData]);
-    }
-  }, [medicineData]);
 
   const onOpenDrawer = () => {
     navigation.openDrawer();
@@ -37,19 +30,24 @@ const Home = ({ navigation }) => {
 
   return (
     <View className="flex-1">
-      <Header
-        name={"Home"}
-        onPress_1={onOpenDrawer}
-        onPress_2={onOpenDrawer}
-        icon_1={
-          <Image
-            source={{ uri: "https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_640.png" }}
-            className="w-8 h-8 rounded-full"
-          />
+      <HeaderCustom
+        left={
+          <TouchableOpacity className=" p-2 ml-8" onPress={onOpenDrawer}>
+            <Image
+              source={{ uri: "https://cdn.pixabay.com/photo/2016/11/18/23/38/child-1837375_640.png" }}
+              className="w-8 h-8 rounded-full"
+            />
+          </TouchableOpacity>
         }
-        icon_2={<MagnifyingGlassIcon size="30" color="white" />}
+        name={
+          <View className="justify-center items-center mr-20">
+            <Text className="text-center font-bold text-white text-xl">Home</Text>
+          </View>
+        }
       />
-      <ListTest medicineData={medicineData} />
+      <AppProvider>
+        <ListTest />
+      </AppProvider>
     </View>
   );
 };

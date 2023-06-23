@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, Animated } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "react-native-paper";
 import {
   XCircleIcon,
@@ -11,22 +11,40 @@ import {
 } from "react-native-heroicons/solid";
 import { FancyAlert } from "react-native-expo-fancy-alerts";
 import AlertCustom from "./AlertCustom";
+import { handleUnit, handleTime } from "../utils/dataHandle";
+import EditPillModal from "./EditPillModal";
 
-const ItemComponent = ({ item, onDelete, onOption, rightActionState, rowHeightAnimatedValue }) => {
+const ItemComponentApi = ({ item, onDelete, onOption, rightActionState, rowHeightAnimatedValue }) => {
   const [visible, setVisible] = React.useState(false);
   const toggleAlert = React.useCallback(() => {
     setVisible(!visible);
   }, [visible]);
-  console.log(item);
+
+  const timeMed = () => {
+    const getTime = handleTime(item);
+    return (
+      <View className="flex-row">
+        {getTime?.map((selectTime, index) => (
+          <View key={index} className="flex-row">
+            <Text className="font-bold ml-2 text-sm text-gray-600">
+              {selectTime?.time} {index !== getTime?.length - 1 && "-"}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
   return (
     <Animated.View className="w-[400px]">
-      <Card className="flex-auto m-1">
+      {/* {visible && <EditPillModal visible={visible} onCancel={() => setVisible(false)} item={item} />} */}
+      <Card className="flex-auto m-1 py-1">
         <Card.Content className=" ">
-          <TouchableOpacity onPress={() => onOption(item, "Edit")}>
+          <TouchableOpacity onPress={() => onOption(item)}>
             <View className="flex-row justify-center items-center">
               <View className="flex-[0.4]">
                 {item?.imageURI !== null ? (
-                  <Image source={{ uri: item?.imageURI }} className="w-24 h-20  rounded-lg" />
+                  <Image source={{ uri: item?.medicineUrl }} className="w-24 h-20  rounded-lg" />
                 ) : (
                   <Image source={require("../../assets/images/medicine.gif")} className="w-24 h-20" />
                 )}
@@ -36,31 +54,20 @@ const ItemComponent = ({ item, onDelete, onOption, rightActionState, rowHeightAn
                 <View className="flex-row items-center">
                   <Image source={require("../../assets/icons/pill.png")} className="w-5 h-5" />
                   <Text className="font-bold text-lg ml-1">:</Text>
-                  <Text className="font-bold ml-2 text-xl">{item?.name}</Text>
+                  <Text className="font-bold ml-2 text-xl">{item?.medicineName}</Text>
                 </View>
                 <View className="flex-row items-center">
                   <ClockIcon size={20} color="gray" />
                   <Text className="font-bold text-lg">:</Text>
-                  {item?.time?.map((selectTime, index) => (
-                    <View key={index}>
-                      <Text className="font-bold ml-2 text-sm text-gray-600">
-                        {selectTime?.time} {index !== item?.time?.length - 1 && "-"}
-                      </Text>
-                    </View>
-                  ))}
+                  {timeMed()}
                 </View>
 
                 <View className="flex-row items-center">
-                  <ClipboardDocumentIcon size={20} color="gray" />
-                  <Text className="font-bold text-lg">:</Text>
-                  <Text className="font-bold ml-2 text-sm text-gray-600">{item?.note}</Text>
+                  <Text className="font-bold text-sm text-gray-600">Take :</Text>
+                  <Text className="font-bold ml-2 text-sm text-green-500">{item?.takenQuantity}</Text>
+                  <Text className="font-bold text-sm text-green-500"> {handleUnit(item)}</Text>
                 </View>
               </View>
-              {/* <View>
-                <TouchableOpacity onPress={() => onOption(item, "Edit")}>
-                  <PencilSquareIcon size={25} color="#29C5F6" />
-                </TouchableOpacity>
-              </View> */}
             </View>
           </TouchableOpacity>
         </Card.Content>
@@ -69,4 +76,4 @@ const ItemComponent = ({ item, onDelete, onOption, rightActionState, rowHeightAn
   );
 };
 
-export default ItemComponent;
+export default ItemComponentApi;

@@ -10,8 +10,8 @@ const Register = ({ navigation }) => {
   };
   const [formData, setFormData] = useState({
     password: "",
-    email: "huy@gmail.com",
-    phone: "0147852369",
+    email: "",
+    phone: "",
   });
 
   const handleFormChange = (field, value) => {
@@ -50,13 +50,13 @@ const Register = ({ navigation }) => {
         <View className="flex-row justify-center">
           <Image
             source={require("../../../assets/images/register_img.png")}
-            style={{ width: 195, height: 130 }}
+            style={{ width: 205, height: 200 }}
             className="mb-3"
           />
         </View>
       </SafeAreaView>
       {/* ======================== */}
-      <View className="flex-1 bg-white px-8 pt-8 mt-2" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
+      <View className="flex-1 bg-white px-8 pt-8" style={{ borderTopLeftRadius: 50, borderTopRightRadius: 50 }}>
         <View className="form space-y-2">
           <Text className="text-gray-700 ml-4">Phone</Text>
           <TextInput
@@ -87,7 +87,7 @@ const Register = ({ navigation }) => {
             <Text className="text-lg font-bold text-center text-gray-700">Sign Up</Text>
           </TouchableOpacity>
         </View>
-        <Text className="text-sm text-gray-700 font-bold text-center py-3">Or</Text>
+        {/* <Text className="text-sm text-gray-700 font-bold text-center py-3">Or</Text>
         <View className="flex-row justify-center space-x-12">
           <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl">
             <Image source={require("../../../assets/icons/google.png")} className="w-10 h-10" />
@@ -98,7 +98,7 @@ const Register = ({ navigation }) => {
           <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl">
             <Image source={require("../../../assets/icons/apple.png")} className="w-10 h-10" />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View className="flex-row justify-center items-center mt-5">
           <Text className=" font-semibold">Already have an account? </Text>
           <TouchableOpacity onPress={onPressLogin}>

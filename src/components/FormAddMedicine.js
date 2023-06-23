@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Modal, Platform } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UploadImage from "./UploadImage";
 import { StyleSheet } from "react-native";
 import TimeComponentCustom from "./TimeComponentCustom";
@@ -7,15 +7,15 @@ import { TextInput } from "react-native-paper";
 import { ClipboardDocumentIcon } from "react-native-heroicons/outline";
 import { SelectCountry, Dropdown } from "react-native-element-dropdown";
 import { options, local_data } from "../../fakedata";
+import color from "../utils/color";
 
-const FormAddMedicine = ({ addPill }) => {
-  const [selectedImageURI, setSelectedImageURI] = useState(null);
+const FormAddMedicine = ({ addPill, initData }) => {
+  const [selectedImageURI, setSelectedImageURI] = useState(initData?.image || null);
   const [selectedTime, setSelectedTime] = useState();
   const [country, setCountry] = useState("PILL");
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
   const [formData, setFormData] = useState({
     imageURI: selectedImageURI,
     time: selectedTime,
@@ -24,6 +24,19 @@ const FormAddMedicine = ({ addPill }) => {
     dose: "1",
     note: "",
   });
+
+  useEffect(() => {
+    if (initData) {
+      setSelectedImageURI(initData?.image);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        imageURI: initData?.image,
+        time: selectedTime,
+        name: initData?.name,
+        type: initData?.type,
+      }));
+    }
+  }, [initData]);
 
   const handleImageSelection = (imageURI) => {
     setSelectedImageURI(imageURI);
@@ -59,7 +72,7 @@ const FormAddMedicine = ({ addPill }) => {
       </View>
       <View className="justify-center items-center form ">
         {/* <View className="justify-center items-center  w-[96%] h-[100px] border my-1 border-black rounded-2xl"> */}
-        <UploadImage onImageSelect={handleImageSelection} />
+        <UploadImage onImageSelect={handleImageSelection} imageURI={formData?.imageURI} />
         {/* </View> */}
         <View className=" first-letter: w-full">
           <View className="">
@@ -67,6 +80,7 @@ const FormAddMedicine = ({ addPill }) => {
               label={"Medicine Name"}
               mode="outlined"
               className=" text-gray-700 rounded-lg mx-2"
+              value={formData?.name}
               left={<TextInput.Icon icon="file-document-outline" />}
               onChangeText={(value) => handleFormChange("name", value)}
             />
@@ -82,11 +96,11 @@ const FormAddMedicine = ({ addPill }) => {
                 iconStyle={styles.iconStyle}
                 search
                 maxHeight={200}
-                value={country}
                 data={local_data}
                 valueField="value"
                 labelField="label"
                 imageField="image"
+                value={formData?.type}
                 placeholder="Select country"
                 searchPlaceholder="Search Types Medicine"
                 onChange={(e) => {
@@ -146,7 +160,7 @@ const FormAddMedicine = ({ addPill }) => {
         </View>
       </View>
       <View className="flex-row justify-between items-center mx-2">
-        <View className="flex-1 bg-green-400 py-4 my-2 rounded-lg w-full">
+        <View className="flex-1  py-3 my-2 rounded-lg w-full" style={{ backgroundColor: color.success }}>
           <TouchableOpacity onPress={handleAddPill}>
             <Text className="text-center font-bold text-white text-xl">Add</Text>
           </TouchableOpacity>

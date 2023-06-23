@@ -1,0 +1,45 @@
+<HeaderCustom
+        left={
+          <TouchableOpacity className=" p-2 ml-4" onPress={checkPillEmpty}>
+            <ArrowLeftIcon size="30" color="white" />
+          </TouchableOpacity>
+        }
+        name={
+          <View className="justify-center items-center">
+            <Text className="text-center font-bold text-white text-xl">Reminder</Text>
+          </View>
+        }
+        right={
+          <Animated.View
+            style={[
+              {
+                width: 300,
+                height: 50,
+                backgroundColor: "#E7E7E7",
+                borderRadius: 10,
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 100,
+              },
+              animatedStyle,
+            ]}
+          >
+            {/* <TextInput style={{ width: "85%" }} placeholder="search here" /> */}
+            <TouchableOpacity
+              className=" p-2 mr-96"
+              onPress={() => {
+                if (animation.value == 1) {
+                  animation.value = 0;
+                } else {
+                  animation.value = 1;
+                }
+              }}
+            >
+              <MagnifyingGlassIcon size="30" color="white" />
+            </TouchableOpacity>
+          </Animated.View>
+        }
+        //  onPress_1={checkPillEmpty}
+        //  icon_1={<ArrowLeftIcon size="30" color="white" />}
+        //  icon_2={<MagnifyingGlassIcon size="30" color="white" />}
+      />
